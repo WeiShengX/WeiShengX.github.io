@@ -95,7 +95,7 @@
 <p>1.这里先说一下xff注入是个什么东西吧。参考网站放在这个题解的最后。</p>
 <p>XFF，是X-Forwarded-for的缩写，用来表示 HTTP 请求端真实 IP，而XFF注入是SQL注入的一种，该注入原理是通过修改X-Forwarded-for头对带入系统的dns进行sql注入，从而得到网站的数据库内容。</p>
 <p>当然，sql注入很容易想到，xff可以进行union注入，方法也与普通的union注入类似，这里我们主要说xff漏洞注入。xff报错注入利用了updatexml()函数。</p>
-<p>关于updataxml()函数：</p>
+<p>关于updatexml()函数：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">UPDATEXML (XML_document, XPath_string, new_value); </span><br><span class="line"> 第一个参数：XML_document是String格式，为XML文档对象的名称，文中为Doc </span><br><span class="line"> 第二个参数：XPath_string (Xpath格式的字符串路径) </span><br><span class="line"> 第三个参数：new_value，String格式，替换查找到的符合条件的数据 </span><br><span class="line"> 作用：改变文档中符合条件的节点的值</span><br><span class="line"> 即:updatexml(目标xml内容，xml路径，更新的内容)</span><br></pre></td></tr></table></figure>
 
 <p>举个例子，建立了一个user表如图</p>
@@ -116,8 +116,8 @@
 <p>随后序列化，payload：<code>http://101.32.205.189/?input=O:4:&quot;flag&quot;:2:&#123;s:2:&quot;ip&quot;;s:5:&quot;xxxxx&quot;;s:5:&quot;check&quot;;s:25:&quot;n1ctf20205bf75ab0a30dfc0c&quot;;&#125;</code></p>
 <p>访问即可得到flag。</p>
 <p>几个问题：</p>
-<p>1.Q:为什么updataxml的第一个和第三个参数是数字1。</p>
-<p>A:实际上这两个1是几都没问题，因为updataxml()由于报错，执行只用到了第二个参数也就是我们的concat，而第一个和第三个参数压根没用到。</p>
+<p>1.Q:为什么updatexml的第一个和第三个参数是数字1。</p>
+<p>A:实际上这两个1是几都没问题，因为updatexml()由于报错，执行只用到了第二个参数也就是我们的concat，而第一个和第三个参数压根没用到。</p>
 <p>2.Q:脚本中payload为什么要用f’’格式化？直接改成双引号再把字符串里面的转义符去掉为什么不行(传出来的结果是字典(word))？</p>
 <p>A:f-string在本质上并不是字符串常量，而是一个在运行时运算求值的表达式。也就是说，虽然用格式化和用双引号得到的字符串形式上相同，但是本质上后者不会运行里面的语句，而是被当成一个普通的字符串。被当成普通字符串的结果就是肯定最后检测到n1ctf这个子串(自己看payload里是不是出现了n1ctf)，这样就会恒有”welcome to n1ctf”，这样自然的，字典中所有元素都满足条件，就全都出去了/捂脸</p>
 <p>3.Q:<code>http://101.32.205.189/?input=O:4:&quot;flag&quot;:2:&#123;s:2:&quot;ip&quot;;O:2:&quot;ip&quot;:0:&#123;&#125;;s:5:&quot;check&quot;;s:25:&quot;n1ctf20205bf75ab0a30dfc0c&quot;;&#125;</code>这个payload为什么没有弹出flag？</p>
@@ -137,7 +137,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/20/N1CTF-Web%E7%9A%84%E6%80%BB%E7%BB%93/" data-id="ckghzzxi90001kwv01mxghmd5" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/20/N1CTF-Web%E7%9A%84%E6%80%BB%E7%BB%93/" data-id="ckgjbokbm0000o8v0elb9gyvi" class="article-share-link">Share</a>
       
       
     </footer>
@@ -193,7 +193,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/19/%E5%8E%9F%E5%9E%8B%E6%B1%A1%E6%9F%93/" data-id="ckghzzxic0004kwv023gmardg" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/19/%E5%8E%9F%E5%9E%8B%E6%B1%A1%E6%9F%93/" data-id="ckgjbokd50004o8v0bdd95e25" class="article-share-link">Share</a>
       
       
     </footer>
@@ -232,7 +232,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/17/tp5%E6%BC%8F%E6%B4%9E/" data-id="ckghzzxib0003kwv0fvqy8dj0" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/17/tp5%E6%BC%8F%E6%B4%9E/" data-id="ckgjbokd00002o8v07bzwadfm" class="article-share-link">Share</a>
       
       
     </footer>
@@ -338,7 +338,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/14/SQL%E6%B3%A8%E5%85%A5%E7%9A%84%E6%80%BB%E7%BB%93/" data-id="ckghzzxi30000kwv09no8dpe7" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/14/SQL%E6%B3%A8%E5%85%A5%E7%9A%84%E6%80%BB%E7%BB%93/" data-id="ckgjbokc70001o8v09q06a7ge" class="article-share-link">Share</a>
       
       
     </footer>
@@ -396,7 +396,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/08/%E5%85%B3%E4%BA%8EPHP%E5%BA%8F%E5%88%97%E5%8C%96%E5%92%8C%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E7%9A%84%E6%BC%8F%E6%B4%9E%E5%92%8C%E4%B8%80%E4%BA%9B%E5%B0%8F%E7%BB%86%E8%8A%82/" data-id="ckghzzxia0002kwv0djm5hsmh" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/08/%E5%85%B3%E4%BA%8EPHP%E5%BA%8F%E5%88%97%E5%8C%96%E5%92%8C%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E7%9A%84%E6%BC%8F%E6%B4%9E%E5%92%8C%E4%B8%80%E4%BA%9B%E5%B0%8F%E7%BB%86%E8%8A%82/" data-id="ckgjbokd20003o8v054ot2o7z" class="article-share-link">Share</a>
       
       
     </footer>

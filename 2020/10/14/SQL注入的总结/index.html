@@ -15,7 +15,7 @@
 <meta property="og:description" content="到目前为止我也做了好多SQL注入的题了，但是每次做都觉得很混乱，整理一下看来是很有必要的。 目前我只接触到了回显注入、堆叠注入和宽字节注入，之后如果有新的再补充 一、常规步骤： PS:爆库&#x2F;表&#x2F;数据前要先确认回显点，并且在回显点查询的信息和数量要和字段数匹配才行 (-1)万能密码：1’ or 1&#x3D;1# (0)判断字符型还是数字型 (1)测试字段数 EG:1’ order by 1# PS:也可以联">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-10-14T11:34:25.000Z">
-<meta property="article:modified_time" content="2020-10-14T14:10:49.292Z">
+<meta property="article:modified_time" content="2020-10-21T12:30:12.285Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
   
@@ -111,6 +111,11 @@
 <p>堆叠注入:1’;show columns from 表名;#</p>
 <p>(5)爆出数据</p>
 <p>联合查询:1’ union select 列名1, 列名2 from 表名#</p>
+<p>堆叠注入:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1&#39;;</span><br><span class="line">HANDLER 表名 OPEN;</span><br><span class="line">HANDLER 表名 READ FIRST;</span><br><span class="line">HANDLER 表名 CLOSE;#</span><br></pre></td></tr></table></figure>
+
+
+
 <p>二、绕过</p>
 <p>很多时候会发现，上面的步骤好像并没有那么顺利。“别黑了”、“stop hacking!”类似这种黑话见到早就不止一次了QAQ。因为现在哪还有那么友好的出题人出题是为了让你按照公式直接秒的，大多时候出题人都设置了白名单过滤，一旦你输入的payload被检测到匹配白名单中的某一项，注入就失败了。下面总结一下见过的白名单过滤以及绕过方法。</p>
 <p>(1)过滤关键字</p>
@@ -154,6 +159,10 @@
 <p>比如如果我们使用?id=0e1union select 1,2</p>
 <p>后端就变成了 SELECT user,password from users where user_id=0 union select 1,2//0e1变成0后面自动补了个空格为了区分后面的内容，但是白名单过滤的时候是区分不出来的，白名单只会认为0e1union是一个字符串，真正开始查询的时候0e1才会变成0+空格</p>
 <p>因此如果白名单中有union，那么通过科学计数法，union就可以顺利绕过过滤了</p>
+<p>三、报错注入</p>
+<p>目前只用过updatexml()报错注入QAQ。有关内容在N1CTFWeb那篇文章写的很细了</p>
+<p>直接放个题感受一下吧。。。</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/xhds/p/12311408.html">Here！</a></p>
 <p>目前知道的知识点就这些，之后随缘补充吧233</p>
 <p>参考网站：</p>
 <p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/hhwu/p/12622048.html">常规步骤参考1</a></p>
@@ -162,7 +171,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/14/SQL%E6%B3%A8%E5%85%A5%E7%9A%84%E6%80%BB%E7%BB%93/" data-id="ckgjbpcqk0001g8v08a8t2bij" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/14/SQL%E6%B3%A8%E5%85%A5%E7%9A%84%E6%80%BB%E7%BB%93/" data-id="ckgjdkn2s00019ov0hakuby7b" class="article-share-link">Share</a>
       
       
     </footer>

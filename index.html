@@ -64,77 +64,6 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-Hackergame2020-部分题解" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2020/11/02/Hackergame2020-%E9%83%A8%E5%88%86%E9%A2%98%E8%A7%A3/" class="article-date">
-  <time datetime="2020-11-02T03:22:57.533Z" itemprop="datePublished">2020-11-02</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/11/02/Hackergame2020-%E9%83%A8%E5%88%86%E9%A2%98%E8%A7%A3/">Hackergame2020-部分题解</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>1.签到</p>
-<p>直接在url中把number改成1就好了</p>
-<p>2.猫咪问答</p>
-<p>12/256/9/9/17098</p>
-<p>3.2048</p>
-<p>看源码发现给了hint，打开static/js/html_actuator.js，发现了won之后的操作</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">var url;</span><br><span class="line"> if (won) &#123;</span><br><span class="line">   url &#x3D; &quot;&#x2F;getflxg?my_favorite_fruit&#x3D;&quot; + (&#39;b&#39;+&#39;a&#39;+ +&#39;a&#39;+&#39;a&#39;).toLowerCase();</span><br><span class="line"> &#125; else &#123;</span><br><span class="line">   url &#x3D; &quot;&#x2F;getflxg?my_favorite_fruit&#x3D;&quot;;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
-
-<p>后面那个字符串到网上一查发现是banana(原因<a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_30849591/article/details/100093053">在这</a>)</p>
-<p>直接构造payload：<a target="_blank" rel="noopener" href="http://202.38.93.111:10005/getflxg?my_favorite_fruit=banana">http://202.38.93.111:10005/getflxg?my_favorite_fruit=banana</a></p>
-<p>4.一闪而过的flag</p>
-<p>可以直接cmd打开，或者手速够快也可以</p>
-<p>5.从零开始的记账工具人</p>
-<p>写脚本</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">data&#x3D;&quot;肆角玖分贰角玖分壹元捌角柒分陆分&quot;&#x2F;&#x2F;这是最后一次，所以只有数量为10的了</span><br><span class="line">str1&#x3D;&quot;拾元分角&quot;</span><br><span class="line">str2&#x3D;&quot;壹贰叁肆伍陆柒捌玖&quot;</span><br><span class="line">str4&#x3D;&quot;123456789&quot;</span><br><span class="line">result&#x3D;1104009</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">for i in range(9):</span><br><span class="line">    data&#x3D;data.replace(str2[i],str4[i])</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">for i in range(len(data)):</span><br><span class="line">    if(data[i]&#x3D;&#x3D;&quot;拾&quot;):</span><br><span class="line">        if(data[i-1] in str4):</span><br><span class="line">            result&#x3D;result+int(data[i-1])*1000</span><br><span class="line">        else:</span><br><span class="line">            result&#x3D;result+1000</span><br><span class="line">    if(data[i]&#x3D;&#x3D;&quot;元&quot;):</span><br><span class="line">        if(data[i-1]&#x3D;&#x3D;&quot;拾&quot;):</span><br><span class="line">            result&#x3D;result</span><br><span class="line">        else:</span><br><span class="line">            result&#x3D;result+int(data[i-1])*100</span><br><span class="line">    if(data[i]&#x3D;&#x3D;&quot;角&quot;):</span><br><span class="line">        result&#x3D;result+int(data[i-1])*10</span><br><span class="line">    if(data[i]&#x3D;&#x3D;&quot;分&quot;):</span><br><span class="line">        result+&#x3D;int(data[i-1])</span><br><span class="line">print(result*0.01)#为了准确先*100让最小单位变为分，最后*0.01变回元</span><br><span class="line"></span><br><span class="line">#手动运行九次，每次data粘贴到浏览器的网址栏来去掉换行符。从1叠加到10就可以了，第一次全都加，最后一次data只包含10倍的金额</span><br><span class="line">ps:excel可以按照数量降序排列，提取数据会变得很简单</span><br><span class="line">    </span><br></pre></td></tr></table></figure>
-
-<p>最后得到flag{11042.80}</p>
-<p>6.超简单的世界模拟器</p>
-<p>(1)蝴蝶效应</p>
-<p>到网上查询研究了一下，找到了“宇宙飞船”</p>
-<p>第一个方块在6/7行，直接构造一个飞船撞击他(参考网站<a target="_blank" rel="noopener" href="https://www.douban.com/note/690728776/">在这</a>)</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">0</span><br><span class="line"></span><br><span class="line">0</span><br><span class="line"></span><br><span class="line">0</span><br><span class="line"></span><br><span class="line">0</span><br><span class="line"></span><br><span class="line">0</span><br><span class="line"></span><br><span class="line">10010</span><br><span class="line"></span><br><span class="line">00001</span><br><span class="line"></span><br><span class="line">10001</span><br><span class="line"></span><br><span class="line">01111</span><br></pre></td></tr></table></figure>
-
-<p>得到flag{D0_Y0U_l1k3_g4me_0f_l1fe?_ab9c40cb18}</p>
-<p>关键在第二个</p>
-<p>(2)一石二鸟</p>
-<p>在网上搜集资料发现，生命游戏本质就是对生物竞争资源和抱团的模拟，当两个大种族(大于2<em>2)撞击，会发生毁灭，而最后资源会趋于稳态。也就是说，想消灭第二个方块，就要想办法构造一个块去撞击他。但是题目给的15\</em>15范围太小了，无论构造直线飞行的飞船还是小型滑翔机，都撞不到距离很远的第二个方块。结合题目说的蝴蝶效应，想到如果我放的种子可以自己发展出很多的块，就有可能撞到第二个块了。</p>
-<p>然后去看贴吧，找到某<a target="_blank" rel="noopener" href="http://jump2.bdimg.com/p/6880085102">贴子的11楼</a>真的有能自己发展壮大的种子(不止这一个，但是这个就够用了)。</p>
-<p>发现下面左边的种子是向着左上发展，于是对称一下得到右边的可以朝着右下发展的种子</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">010         110</span><br><span class="line"></span><br><span class="line">111         011</span><br><span class="line"></span><br><span class="line">001         010</span><br></pre></td></tr></table></figure>
-
-<p>尝试构造</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">0</span><br><span class="line"></span><br><span class="line">0</span><br><span class="line"></span><br><span class="line">0</span><br><span class="line"></span><br><span class="line">0</span><br><span class="line"></span><br><span class="line">0</span><br><span class="line"></span><br><span class="line">0</span><br><span class="line"></span><br><span class="line">0</span><br><span class="line"></span><br><span class="line">0</span><br><span class="line"></span><br><span class="line">0</span><br><span class="line"></span><br><span class="line">000000000000110</span><br><span class="line"></span><br><span class="line">000000000000011</span><br><span class="line"></span><br><span class="line">000000000000010</span><br></pre></td></tr></table></figure>
-
-<p>得到flag{1s_th3_e55ence_0f_0ur_un1ver5e_ju5t_c0mputat1on?_251eaa977d}</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2020/11/02/Hackergame2020-%E9%83%A8%E5%88%86%E9%A2%98%E8%A7%A3/" data-id="ckh007gku0004pgv0bk3ggqri" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
     <article id="post-0.流量分析基础--IP-子网掩码-默认网关-DNS服务器的学习" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2020/10/31/0.%E6%B5%81%E9%87%8F%E5%88%86%E6%9E%90%E5%9F%BA%E7%A1%80--IP-%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81-%E9%BB%98%E8%AE%A4%E7%BD%91%E5%85%B3-DNS%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E5%AD%A6%E4%B9%A0/" class="article-date">
@@ -169,80 +98,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/31/0.%E6%B5%81%E9%87%8F%E5%88%86%E6%9E%90%E5%9F%BA%E7%A1%80--IP-%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81-%E9%BB%98%E8%AE%A4%E7%BD%91%E5%85%B3-DNS%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E5%AD%A6%E4%B9%A0/" data-id="ckh007gkt0003pgv09p3u98iu" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-0.5.wp-geekchallenge2020" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2020/10/29/0.5.wp-geekchallenge2020/" class="article-date">
-  <time datetime="2020-10-29T11:50:16.490Z" itemprop="datePublished">2020-10-29</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/10/29/0.5.wp-geekchallenge2020/">wp-geekchallenge2020</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Web部分</p>
-<p>1.朋友的学妹</p>
-<p>直接看前端就好了QAQ</p>
-<p>2.Ezwww</p>
-<p>扫描器扫出来”/<a target="_blank" rel="noopener" href="http://www.zip&quot;得到一个压缩包,打开之后有一个文件&quot;flag!!!!.txt&quot;,但可惜这个是假的flag2333,之后打开index.php/">www.zip&quot;得到一个压缩包，打开之后有一个文件&quot;flag!!!!.txt&quot;，但可惜这个是假的flag2333，之后打开index.php</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">&lt;html&gt;</span><br><span class="line"></span><br><span class="line"> &lt;head&gt;</span><br><span class="line">  &lt;title&gt;Lola&#39;s website1.0&lt;&#x2F;title&gt;</span><br><span class="line"> &lt;&#x2F;head&gt;</span><br><span class="line"></span><br><span class="line"> &lt;body&gt;</span><br><span class="line"> &lt;?php echo &#39;&lt;h1&gt;welcome to my website&lt;&#x2F;h1&gt;&#39;; ?&gt;</span><br><span class="line"> &lt;?php echo &#39;&lt;p&gt;i will never forget to backup my website......&lt;&#x2F;p&gt;&#39;; ?&gt;</span><br><span class="line"> &lt;?php echo &#39;&lt;img src&#x3D;&quot;img&#x2F;lola.gif&quot; alt&#x3D;&quot;welcome~&quot;&#x2F;&gt;&#39;; ?&gt;</span><br><span class="line"> &lt;&#x2F;body&gt;</span><br><span class="line">&lt;&#x2F;html&gt;</span><br><span class="line">&lt;?php</span><br><span class="line">$key1 &#x3D; $_POST[&#39;a&#39;];</span><br><span class="line">$key2 &#x3D; base64_decode(&#39;c3ljbDB2ZXI&#x3D;&#39;);</span><br><span class="line">if($key1 &#x3D;&#x3D;&#x3D; $key2)</span><br><span class="line">&#123;</span><br><span class="line">    &#x2F;&#x2F;this is a true flag</span><br><span class="line">echo &#39;&lt;p&gt;SYC&#123;xxxxxxxxxxxxxxxxxx&#125;&lt;&#x2F;p&gt;&#39;;</span><br><span class="line">&#125;</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
-
-<p>随便找个base64解密网站得到a=’sycl0ver’，post上传a即可。</p>
-<p>3.刘壮的黑页</p>
-<p>进入题目发现什么都没有，看题目猜测考的上传方式，随便get上传一个a，回显出源码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;&#x2F;HTML&gt;</span><br><span class="line">&lt;?php </span><br><span class="line">include(&quot;flag.php&quot;);</span><br><span class="line">highlight_file(__FILE__);</span><br><span class="line">$username &#x3D; $_GET[&#39;username&#39;];</span><br><span class="line">$passwd &#x3D; $_POST[&#39;passwd&#39;];</span><br><span class="line">if ($username &#x3D;&#x3D;&#x3D; &#39;admin&#39; &amp;&amp; $passwd &#x3D;&#x3D;&#x3D; &#39;syclover&#39;)</span><br><span class="line">&#123;   echo $flag; &#125;</span><br></pre></td></tr></table></figure>
-
-<p>则分别上传admin和passwd即可。</p>
-<p>4.Welcome</p>
-<p>题目给了hints。</p>
-<p>hints1：In addition to the GET request method, there is  another common request method…   hint2: Try to use burpsuite to do  this challenge</p>
-<p>所以用burpsuite改包，将GET改为POST，网页回显源码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php </span><br><span class="line">error_reporting(0); </span><br><span class="line">if ($_SERVER[&#39;REQUEST_METHOD&#39;] !&#x3D;&#x3D; &#39;POST&#39;)&#123; </span><br><span class="line">header(&quot;HTTP&#x2F;1.1 405 Method Not Allowed&quot;);</span><br><span class="line">exit();</span><br><span class="line">&#125;  else &#123;    </span><br><span class="line">        if (!isset($_POST[&#39;roam1&#39;]) || !isset($_POST[&#39;roam2&#39;]))&#123;                                           show_source(__FILE__); </span><br><span class="line">        &#125; </span><br><span class="line">        else if ($_POST[&#39;roam1&#39;] !&#x3D;&#x3D; $_POST[&#39;roam2&#39;] &amp;&amp; sha1($_POST[&#39;roam1&#39;]) &#x3D;&#x3D;&#x3D; sha1($_POST[&#39;roam2&#39;]))&#123;</span><br><span class="line">        phpinfo(); &#x2F;&#x2F; collect information from phpinfo!   &#125; &#125; </span><br></pre></td></tr></table></figure>
-
-<p>典型的数组漏洞，将roam1和roam2以数组形式post上传</p>
-<p><code>roam1[]=1&amp;roam2[]=2</code></p>
-<p>回显出phpinfo()</p>
-<p>结果发现在core中有<code>/var/www/html/f1444aagggg.php</code></p>
-<p>然后直接访问<code>http://49.234.224.119:8000/f1444aagggg.php</code>发现是not found，但是样式显然不对劲。查看network在响应头中发现Flag:SYC{w31c0m3_t0_5yc_r0@m_php1}</p>
-<p>5.我是大黑客</p>
-<p>hint说有liuzhuang.php.bak的备份文件，下载发现竟然是一句话木马，直接菜刀走起，在根目录找到Flag:SYC{1iuzHuang_yyd_G0d!}</p>
-<p>6.ezbypass</p>
-<p>一进网页看见</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Please use a GET request to pass in the variables a and b, compare them with strcmp and let strcmp return a value of NULL.</span><br><span class="line"></span><br><span class="line">Note that a and b cannot be equal. </span><br></pre></td></tr></table></figure>
-
-<p>一看到要让结果返回null，直接get上传<code>?a[]=1&amp;b[]=2</code></p>
-<p>然后网页显示</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">OKOK,You got the first step.</span><br><span class="line">Please POST a variable c that is not a number to make it equal to 123 </span><br></pre></td></tr></table></figure>
-
-<p>利用php弱类型，直接post上传<code>c=123a</code></p>
-<p>得到Flag:SYC{php_4s_so_funny} </p>
-<p>7.</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/29/0.5.wp-geekchallenge2020/" data-id="ckh007gkl0000pgv041dggxwt" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/31/0.%E6%B5%81%E9%87%8F%E5%88%86%E6%9E%90%E5%9F%BA%E7%A1%80--IP-%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81-%E9%BB%98%E8%AE%A4%E7%BD%91%E5%85%B3-DNS%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E5%AD%A6%E4%B9%A0/" data-id="ckh3fo2630002q0v097x26d2z" class="article-share-link">Share</a>
       
       
     </footer>
@@ -279,7 +135,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/24/0.%E6%9C%89%E5%85%B3SSTI%E6%BC%8F%E6%B4%9E%E5%92%8Cflask%E7%9A%84%E5%AD%A6%E4%B9%A0/" data-id="ckh007gks0002pgv01kowh39r" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/24/0.%E6%9C%89%E5%85%B3SSTI%E6%BC%8F%E6%B4%9E%E5%92%8Cflask%E7%9A%84%E5%AD%A6%E4%B9%A0/" data-id="ckh3fo2600001q0v0f9tbc57b" class="article-share-link">Share</a>
       
       
     </footer>
@@ -316,7 +172,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/24/0.burpsuite%E4%BD%BF%E7%94%A8%E6%94%BB%E7%95%A5/" data-id="ckh007gkq0001pgv0gqkvdk8n" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/24/0.burpsuite%E4%BD%BF%E7%94%A8%E6%94%BB%E7%95%A5/" data-id="ckh3fo25k0000q0v00cla9d7a" class="article-share-link">Share</a>
       
       
     </footer>
@@ -399,7 +255,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/20/N1CTF-Web%E7%9A%84%E6%80%BB%E7%BB%93/" data-id="ckh007gku0005pgv03epa2cqr" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/20/N1CTF-Web%E7%9A%84%E6%80%BB%E7%BB%93/" data-id="ckh3fo2660003q0v00lo1cofy" class="article-share-link">Share</a>
       
       
     </footer>
@@ -455,7 +311,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/19/%E5%8E%9F%E5%9E%8B%E6%B1%A1%E6%9F%93/" data-id="ckh007gkw0007pgv09x67bohl" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/19/%E5%8E%9F%E5%9E%8B%E6%B1%A1%E6%9F%93/" data-id="ckh3fo26a0005q0v06qn5cyqe" class="article-share-link">Share</a>
       
       
     </footer>
@@ -570,7 +426,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/14/SQL%E6%B3%A8%E5%85%A5%E7%9A%84%E6%80%BB%E7%BB%93/" data-id="ckh007gkv0006pgv04s74gras" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/14/SQL%E6%B3%A8%E5%85%A5%E7%9A%84%E6%80%BB%E7%BB%93/" data-id="ckh3fo2680004q0v02a94823r" class="article-share-link">Share</a>
       
       
     </footer>
@@ -628,7 +484,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/08/%E5%85%B3%E4%BA%8EPHP%E5%BA%8F%E5%88%97%E5%8C%96%E5%92%8C%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E7%9A%84%E6%BC%8F%E6%B4%9E%E5%92%8C%E4%B8%80%E4%BA%9B%E5%B0%8F%E7%BB%86%E8%8A%82/" data-id="ckh007gl10008pgv00xuu40jd" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/08/%E5%85%B3%E4%BA%8EPHP%E5%BA%8F%E5%88%97%E5%8C%96%E5%92%8C%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E7%9A%84%E6%BC%8F%E6%B4%9E%E5%92%8C%E4%B8%80%E4%BA%9B%E5%B0%8F%E7%BB%86%E8%8A%82/" data-id="ckh3fo26q0006q0v08fuo57ca" class="article-share-link">Share</a>
       
       
     </footer>
@@ -656,7 +512,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">November 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/10/">October 2020</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/10/">October 2020</a></li></ul>
     </div>
   </div>
 
@@ -669,15 +525,7 @@
       <ul>
         
           <li>
-            <a href="/2020/11/02/Hackergame2020-%E9%83%A8%E5%88%86%E9%A2%98%E8%A7%A3/">Hackergame2020-部分题解</a>
-          </li>
-        
-          <li>
             <a href="/2020/10/31/0.%E6%B5%81%E9%87%8F%E5%88%86%E6%9E%90%E5%9F%BA%E7%A1%80--IP-%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81-%E9%BB%98%E8%AE%A4%E7%BD%91%E5%85%B3-DNS%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E5%AD%A6%E4%B9%A0/">流量分析基础--IP 子网掩码 默认网关 DNS服务器的学习</a>
-          </li>
-        
-          <li>
-            <a href="/2020/10/29/0.5.wp-geekchallenge2020/">wp-geekchallenge2020</a>
           </li>
         
           <li>
@@ -686,6 +534,14 @@
         
           <li>
             <a href="/2020/10/24/0.burpsuite%E4%BD%BF%E7%94%A8%E6%94%BB%E7%95%A5/">burpsuite使用攻略</a>
+          </li>
+        
+          <li>
+            <a href="/2020/10/20/N1CTF-Web%E7%9A%84%E6%80%BB%E7%BB%93/">N1CTF Web的总结</a>
+          </li>
+        
+          <li>
+            <a href="/2020/10/19/%E5%8E%9F%E5%9E%8B%E6%B1%A1%E6%9F%93/">原型污染</a>
           </li>
         
       </ul>

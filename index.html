@@ -129,7 +129,7 @@
 <p>然而，事情并没有那么简单。我在终端上发现跑不出来，output跑出来是<code>))(tupni(cexe</code>，这和reversed(code)可不相等，这是为什么呢？</p>
 <p>仔细思考了一下想明白了。这里后端的文件代码就是exec(input())，我输入了input()，但是这个input()并没有写入文件，而我代码功能实现的输出<strong>文件的</strong>代码，所以回显就只有<code>))(tupni(cexe</code>。</p>
 <p>第一时间我想到两种思路。</p>
-<p>第一种，想办法把input()读到的代码写进文件里，而且不能是单纯的写，而是要彻底更换文件的内容，把原来的<code>exec(input())</code>替换成<code>print(open(__file__).read())</code>，否则多出来的原来文件中的<code>exec(input())</code>永远会多出来，运行<strong>输入代码所得到的输出代码</strong>的就永远会比**reversed(code)**多一个<code>))(tupni(cexe</code>，也就永远不可能满足条件。</p>
+<p>第一种，想办法把input()读到的代码写进文件里，而且不能是单纯的写，而是要彻底更换文件的内容，把原来的<code>exec(input())</code>替换成<code>print(open(__file__).read())</code>，否则多出来的原来文件中的<code>exec(input())</code>永远会多出来，运行<strong>输入代码所得到的输出代码</strong>的就永远会比reversed(code)多一个<code>))(tupni(cexe</code>，也就永远不可能满足条件。</p>
 <p><em>这样会不会引发一个问题?</em></p>
 <p><em>Q:如果原来文件的exec(input())没了，改成我们的输入了。那么程序还会忠实地执行我们输入的代码？换言之，exec和input以及我们输入的东西都是什么时候开始生效的？是我们输入代码之后exec才开始执行；还是早在一开始，exec就已经启动，只等着我们的输入了呢？</em></p>
 <p><em>A:改写、写入文件并不是代码一执行，数据就会被写进文件去的。事实上，要写进的数据会先进缓冲区，等(__file__)被close()了或者手动flush()了，才会被写入，而且这个过程必定是exec已经执行完毕了，所以不会有矛盾。</em></p>
@@ -196,7 +196,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/11/11/Hackergame2020-%E9%83%A8%E5%88%86%E9%A2%98%E8%A7%A3/" data-id="ckhexpde200071cv01acuhob9" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/11/11/Hackergame2020-%E9%83%A8%E5%88%86%E9%A2%98%E8%A7%A3/" data-id="ckhexqskt000708v07s0n3i97" class="article-share-link">Share</a>
       
       
     </footer>
@@ -240,7 +240,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/31/0.%E6%B5%81%E9%87%8F%E5%88%86%E6%9E%90%E5%9F%BA%E7%A1%80--IP-%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81-%E9%BB%98%E8%AE%A4%E7%BD%91%E5%85%B3-DNS%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E5%AD%A6%E4%B9%A0/" data-id="ckhexpddu00021cv0d4chdmgf" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/31/0.%E6%B5%81%E9%87%8F%E5%88%86%E6%9E%90%E5%9F%BA%E7%A1%80--IP-%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81-%E9%BB%98%E8%AE%A4%E7%BD%91%E5%85%B3-DNS%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E5%AD%A6%E4%B9%A0/" data-id="ckhexqskj000208v04smyfplt" class="article-share-link">Share</a>
       
       
     </footer>
@@ -277,7 +277,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/24/0.%E6%9C%89%E5%85%B3SSTI%E6%BC%8F%E6%B4%9E%E5%92%8Cflask%E7%9A%84%E5%AD%A6%E4%B9%A0/" data-id="ckhexpddm00001cv08pku2f3z" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/24/0.%E6%9C%89%E5%85%B3SSTI%E6%BC%8F%E6%B4%9E%E5%92%8Cflask%E7%9A%84%E5%AD%A6%E4%B9%A0/" data-id="ckhexqskc000108v09zoacd9x" class="article-share-link">Share</a>
       
       
     </footer>
@@ -314,7 +314,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/24/0.burpsuite%E4%BD%BF%E7%94%A8%E6%94%BB%E7%95%A5/" data-id="ckhexpdds00011cv08tqyaanv" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/24/0.burpsuite%E4%BD%BF%E7%94%A8%E6%94%BB%E7%95%A5/" data-id="ckhexqsk4000008v084wleh1u" class="article-share-link">Share</a>
       
       
     </footer>
@@ -397,7 +397,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/20/N1CTF-Web%E7%9A%84%E6%80%BB%E7%BB%93/" data-id="ckhexpddv00031cv0ek20f5qu" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/20/N1CTF-Web%E7%9A%84%E6%80%BB%E7%BB%93/" data-id="ckhexqskl000308v0b8dk5rzn" class="article-share-link">Share</a>
       
       
     </footer>
@@ -453,7 +453,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/19/%E5%8E%9F%E5%9E%8B%E6%B1%A1%E6%9F%93/" data-id="ckhexpddx00061cv03jtl0ddc" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/19/%E5%8E%9F%E5%9E%8B%E6%B1%A1%E6%9F%93/" data-id="ckhexqskn000608v03w6v82bt" class="article-share-link">Share</a>
       
       
     </footer>
@@ -568,7 +568,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/14/SQL%E6%B3%A8%E5%85%A5%E7%9A%84%E6%80%BB%E7%BB%93/" data-id="ckhexpddv00041cv0c7dtcpzo" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/14/SQL%E6%B3%A8%E5%85%A5%E7%9A%84%E6%80%BB%E7%BB%93/" data-id="ckhexqskm000408v01dkr8yag" class="article-share-link">Share</a>
       
       
     </footer>
@@ -626,7 +626,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/08/%E5%85%B3%E4%BA%8EPHP%E5%BA%8F%E5%88%97%E5%8C%96%E5%92%8C%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E7%9A%84%E6%BC%8F%E6%B4%9E%E5%92%8C%E4%B8%80%E4%BA%9B%E5%B0%8F%E7%BB%86%E8%8A%82/" data-id="ckhexpddw00051cv0coy280nw" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/08/%E5%85%B3%E4%BA%8EPHP%E5%BA%8F%E5%88%97%E5%8C%96%E5%92%8C%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E7%9A%84%E6%BC%8F%E6%B4%9E%E5%92%8C%E4%B8%80%E4%BA%9B%E5%B0%8F%E7%BB%86%E8%8A%82/" data-id="ckhexqskm000508v04cqx5duv" class="article-share-link">Share</a>
       
       
     </footer>

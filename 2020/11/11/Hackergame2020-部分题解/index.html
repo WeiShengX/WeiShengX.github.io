@@ -16,7 +16,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://github.com/USTC-Hackergame/hackergame2020-writeups/raw/master/official/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E7%9A%84%E7%81%AB%E6%98%9F%E6%96%87%E7%94%9F%E6%B4%BB/files/%E5%B8%B8%E8%A7%81%E4%B9%B1%E7%A0%81.jpg">
 <meta property="article:published_time" content="2020-11-11T11:39:50.747Z">
-<meta property="article:modified_time" content="2020-11-11T11:40:07.991Z">
+<meta property="article:modified_time" content="2020-11-12T14:34:28.923Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://github.com/USTC-Hackergame/hackergame2020-writeups/raw/master/official/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E7%9A%84%E7%81%AB%E6%98%9F%E6%96%87%E7%94%9F%E6%B4%BB/files/%E5%B8%B8%E8%A7%81%E4%B9%B1%E7%A0%81.jpg">
@@ -191,6 +191,7 @@
 <p>再挖坑，OpenGL也要开始学了呀</p>
 <p>14.狗狗银行</p>
 <p>这个题真的很好。。。储蓄卡利率0.3%，信用卡利率0.5%，但是如果存了167元，167的0.3%就是0.501，四舍五入变成1元，利率就会很接近0.6%比0.5%大，也就是说只要我卡里存了167，相当于就在赚钱。只要办一张信用卡再办很多储蓄卡，通过信用卡转账给每张储蓄卡167元，每天产一块还回信用卡，相当于净资产就在增加，只要储蓄卡办的够多，赚的就越多，只要每天赚的钱比我吃饭花的10块钱多，总资产就会不断增加，等他超过2000就好了。</p>
+<p>我不由得想起我小学三年级刚学四舍五入那会儿，我就有了一个疑问，如果我把一块钱看成两个五毛，四舍五入就变成了两块钱。<del>果然薅羊毛要从娃娃抓起。</del></p>
 <p>直接抓包查看post的数据，然后自己写脚本</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">import requests</span><br><span class="line">url1&#x3D;&quot;http:&#x2F;&#x2F;202.38.93.111:10100&#x2F;api&#x2F;create&quot;</span><br><span class="line">url2&#x3D;&quot;http:&#x2F;&#x2F;202.38.93.111:10100&#x2F;api&#x2F;transfer&quot;</span><br><span class="line">url3&#x3D;&quot;http:&#x2F;&#x2F;202.38.93.111:10100&#x2F;api&#x2F;eat&quot;</span><br><span class="line">headers&#x3D;&#123;&#39;Content-Type&#39;:&#39;application&#x2F;json;charset&#x3D;utf-8&#39;,</span><br><span class="line">      &#39;Authorization&#39;:&#39;Bearer 3373:MEUCIA13wjtuGzRrp7CH40b2rFnPl1ayGL7r4zMz8kEldXwhAiEAuOIrK+iPT5YWmkfslZuumkBvS9GmJECeoPbagqQEC30&#x3D;&#39;&#125;</span><br><span class="line">data1&#x3D;&#123;&quot;type&quot;:&quot;debit&quot;&#125;</span><br><span class="line">for i in range(200):</span><br><span class="line">  r&#x3D;requests.post(url&#x3D;url1,json&#x3D;data1,headers&#x3D;headers)</span><br><span class="line"></span><br><span class="line">r&#x3D;requests.post(url&#x3D;url1,json&#x3D;&#123;&quot;type&quot;:&quot;credit&quot;&#125;,headers&#x3D;headers)</span><br><span class="line">#Q:为什么这里是json而不是data？</span><br><span class="line">A:要看请求头中Content-Type的内容</span><br><span class="line"></span><br><span class="line">for i in range(2,202):</span><br><span class="line">    data2&#x3D;&#123;&quot;src&quot;:202,&quot;dst&quot;:i,&quot;amount&quot;:167&#125;</span><br><span class="line">    r&#x3D;requests.post(url&#x3D;url2,json&#x3D;data2,headers&#x3D;headers)</span><br><span class="line"></span><br><span class="line">for i in range(100):</span><br><span class="line">    data3&#x3D;&#123;&quot;account&quot;:1&#125;</span><br><span class="line">    r&#x3D;requests.post(url&#x3D;url3,json&#x3D;data3,headers&#x3D;headers)</span><br><span class="line">    for j in range(1,202):</span><br><span class="line">        data4&#x3D;&#123;&quot;src&quot;:j,&quot;dst&quot;:202,&quot;amount&quot;:1&#125;</span><br><span class="line">        r&#x3D;requests.post(url&#x3D;url2,json&#x3D;data4,headers&#x3D;headers)</span><br></pre></td></tr></table></figure>
 
@@ -199,7 +200,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/11/11/Hackergame2020-%E9%83%A8%E5%88%86%E9%A2%98%E8%A7%A3/" data-id="ckhdc0mqq00078cv0b83845v4" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/11/11/Hackergame2020-%E9%83%A8%E5%88%86%E9%A2%98%E8%A7%A3/" data-id="ckhexpde200071cv01acuhob9" class="article-share-link">Share</a>
       
       
     </footer>

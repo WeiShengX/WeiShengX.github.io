@@ -64,10 +64,10 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-0.关于密码爆破的总结" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-0.文件包含漏洞和php伪协议" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2020/11/18/0.%E5%85%B3%E4%BA%8E%E5%AF%86%E7%A0%81%E7%88%86%E7%A0%B4%E7%9A%84%E6%80%BB%E7%BB%93/" class="article-date">
-  <time datetime="2020-11-18T11:27:38.128Z" itemprop="datePublished">2020-11-18</time>
+    <a href="/2020/11/19/0.%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E5%92%8Cphp%E4%BC%AA%E5%8D%8F%E8%AE%AE/" class="article-date">
+  <time datetime="2020-11-19T13:46:21.885Z" itemprop="datePublished">2020-11-19</time>
 </a>
     
   </div>
@@ -78,7 +78,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2020/11/18/0.%E5%85%B3%E4%BA%8E%E5%AF%86%E7%A0%81%E7%88%86%E7%A0%B4%E7%9A%84%E6%80%BB%E7%BB%93/">关于密码爆破的总结</a>
+      <a class="article-title" href="/2020/11/19/0.%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E5%92%8Cphp%E4%BC%AA%E5%8D%8F%E8%AE%AE/">文件包含漏洞和php伪协议</a>
     </h1>
   
 
@@ -86,12 +86,12 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>挖个坑</p>
+        <p>复现题目”flag在index里”</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/11/18/0.%E5%85%B3%E4%BA%8E%E5%AF%86%E7%A0%81%E7%88%86%E7%A0%B4%E7%9A%84%E6%80%BB%E7%BB%93/" data-id="ckhnf8bs40001wcv0bpho35fj" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/11/19/0.%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E5%92%8Cphp%E4%BC%AA%E5%8D%8F%E8%AE%AE/" data-id="ckhowaky700025cv0fuw3hhcb" class="article-share-link">Share</a>
       
       
     </footer>
@@ -101,9 +101,72 @@
 
 
   
-    <article id="post-Hackergame2020-部分题解" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-python requests.session()的理解和base64在正则中的形式" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2020/11/11/Hackergame2020-%E9%83%A8%E5%88%86%E9%A2%98%E8%A7%A3/" class="article-date">
+    <a href="/2020/11/19/python%20requests.session()%E7%9A%84%E7%90%86%E8%A7%A3%E5%92%8Cbase64%E5%9C%A8%E6%AD%A3%E5%88%99%E4%B8%AD%E7%9A%84%E5%BD%A2%E5%BC%8F/" class="article-date">
+  <time datetime="2020-11-19T13:34:01.941Z" itemprop="datePublished">2020-11-19</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/11/19/python%20requests.session()%E7%9A%84%E7%90%86%E8%A7%A3%E5%92%8Cbase64%E5%9C%A8%E6%AD%A3%E5%88%99%E4%B8%AD%E7%9A%84%E5%BD%A2%E5%BC%8F/">(1)python requests.session()的理解和(2)base64在正则中的形式</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今天在bugku上做了个题–秋名山老司机</p>
+<p>点进去之后网页里给了一串算式字符串，要求计算出结果post给value</p>
+<p>我一看就乐了，之前科大ctf2020就有一个很相近的题，不过那个题需要求积分，这个只需要加减乘除就完事了。</p>
+<p>果断写脚本</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">import requests</span><br><span class="line">import re</span><br><span class="line">url&#x3D;&#39;http:&#x2F;&#x2F;123.206.87.240:8002&#x2F;qiumingshan&#x2F;&#39;</span><br><span class="line">patt&#x3D;&#39;[0-9]\S+[0-9]&#39;</span><br><span class="line">source&#x3D;requests.get(url)</span><br><span class="line">source.encoding&#x3D;&#39;utf-8&#39;</span><br><span class="line">str1&#x3D;re.findall(patt,source.text)</span><br><span class="line">data&#x3D;&#123;&#39;value&#39;:(eval(str1[0]))&#125;</span><br><span class="line">r&#x3D;requests.post(url,data,header)</span><br><span class="line">r.encoding&#x3D;&#39;utf-8&#39;</span><br><span class="line">print(r.text)</span><br></pre></td></tr></table></figure>
+
+<p>发现跑不通啊，什么输出都没有</p>
+<p>改一下代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">import requests</span><br><span class="line">import re</span><br><span class="line">url&#x3D;&#39;http:&#x2F;&#x2F;123.206.87.240:8002&#x2F;qiumingshan&#x2F;&#39;</span><br><span class="line">header&#x3D;&#123;&quot;Cookie&quot;:&quot;PHPSESSID&#x3D;8ddda6ievus03fofmdr7mi9ohlak3fpj&quot;&#125;</span><br><span class="line">patt&#x3D;&#39;[0-9]\S+[0-9]&#39;</span><br><span class="line">source&#x3D;requests.get(url,header)</span><br><span class="line">source.encoding&#x3D;&#39;utf-8&#39;</span><br><span class="line">str1&#x3D;re.findall(patt,source.text)</span><br><span class="line">print(str1[0])#新增</span><br><span class="line">data&#x3D;&#123;&#39;value&#39;:(eval(str1[0]))&#125;</span><br><span class="line">r&#x3D;requests.post(url,data,header)</span><br><span class="line">r.encoding&#x3D;&#39;utf-8&#39;</span><br><span class="line"></span><br><span class="line">print(r.text)</span><br></pre></td></tr></table></figure>
+
+<p>发现问题了，第一次输出的算式和第二次输出的算式不一样？！</p>
+<p>之后看了网上的题解明白了。得到source的那一段代码中的算式和post数据时的算式不一样，后者的算式更新了。本质是因为requests发送请求都是一次一次请求的，这两个请求不会被看做是有关联的，而是两次独立发送的请求。所以就用到了requests.session()。它是一个requests对象，通过它就可以让前面的请求保持状态(会在s=requests.session里面挂着)，方便我们在前一个请求的基础上发送第二个请求。</p>
+<p>因此再编写脚本，成功得到flag</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">import requests</span><br><span class="line">import re</span><br><span class="line">url&#x3D;&#39;http:&#x2F;&#x2F;123.206.87.240:8002&#x2F;qiumingshan&#x2F;&#39;</span><br><span class="line">patt&#x3D;&#39;[0-9]\S+[0-9]&#39;</span><br><span class="line">s&#x3D;requests.session()</span><br><span class="line">source&#x3D;s.get(url)</span><br><span class="line">str1&#x3D;re.findall(patt,source.text)</span><br><span class="line">data&#x3D;&#123;&#39;value&#39;:(eval(str1[0]))&#125;</span><br><span class="line">r&#x3D;s.post(url,data)</span><br><span class="line">r.encoding&#x3D;&#39;utf-8&#39;</span><br><span class="line">print(r.text)</span><br></pre></td></tr></table></figure>
+
+
+
+<p>之后再看下一个题–速度要快</p>
+<p>注释说要post margin，发现请求头里有一个flag(测试知道这个flag可以经过两次base64解密得到margin的数值)，但关键在于，这个flag是会变的</p>
+<p>所以还是用到requests.session()，直接写脚本</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">import requests</span><br><span class="line">import base64</span><br><span class="line">import re</span><br><span class="line"></span><br><span class="line">s &#x3D; requests.Session()</span><br><span class="line"></span><br><span class="line">url &#x3D; &#39;http:&#x2F;&#x2F;123.206.87.240:8002&#x2F;web6&#x2F;&#39;</span><br><span class="line"></span><br><span class="line">raw &#x3D; s.get(url)</span><br><span class="line"></span><br><span class="line">flag &#x3D; raw.headers[&#39;flag&#39;]</span><br><span class="line">flag &#x3D; base64.b64decode(flag).decode()#这里decode()的目的是把字节数据转换成字符串</span><br><span class="line">print(flag)</span><br><span class="line">patt&#x3D;&quot;\w+|\w+&#x3D;|\w+&#x3D;&#x3D;&quot;#这里不能只\w+，要考虑正则的所有可能</span><br><span class="line">flag &#x3D; re.findall(patt,flag)</span><br><span class="line">print(flag)</span><br><span class="line"></span><br><span class="line">flag &#x3D; base64.b64decode(flag[2])</span><br><span class="line">raw &#x3D; s.post(url, &#123;&#39;margin&#39;: flag&#125;)</span><br><span class="line"></span><br><span class="line">print(raw.content.decode())</span><br></pre></td></tr></table></figure>
+
+<p>注意:</p>
+<p>1.([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)<br>上面那个式子适合判断base64编码的正则，但是这里不适用，因为得到的tuple拼接字符串反而更麻烦了<br>原理:<br>字符串只可能包含A-Z，a-z，0-9，+，/，=字符<br>字符串长度是4的倍数<br>=只会出现在字符串最后，可能没有或者一个等号或者两个等号</p>
+<p>2.脚本有很多种方式编写，下面这种不用正则也没问题</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">import requests</span><br><span class="line">import base64</span><br><span class="line">url&#x3D;&quot;http:&#x2F;&#x2F;120.24.86.145:8002&#x2F;web6&#x2F;&quot;</span><br><span class="line">r&#x3D;requests.session()</span><br><span class="line">headers&#x3D;r.get(url).headers#因为flag在消息头里</span><br><span class="line"></span><br><span class="line">mid&#x3D;base64.b64decode(headers[&#39;flag&#39;])</span><br><span class="line">mid&#x3D;mid.decode()#为了下一步用split不报错，b64decode后操作的对象是byte类型的字符串，而split函数要用str类型的</span><br><span class="line"></span><br><span class="line">flag &#x3D; base64.b64decode(mid.split(&#39;: &#39;)[1])#获得flag:后的值</span><br><span class="line">data&#x3D;&#123;&#39;margin&#39;:flag&#125;</span><br><span class="line">print (r.post(url,data).text)#post方法传上去</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2020/11/19/python%20requests.session()%E7%9A%84%E7%90%86%E8%A7%A3%E5%92%8Cbase64%E5%9C%A8%E6%AD%A3%E5%88%99%E4%B8%AD%E7%9A%84%E5%BD%A2%E5%BC%8F/" data-id="ckhowakyf00065cv0205n7jow" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-0.Hackergame2020-部分题解" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/11/11/0.Hackergame2020-%E9%83%A8%E5%88%86%E9%A2%98%E8%A7%A3/" class="article-date">
   <time datetime="2020-11-11T11:39:50.747Z" itemprop="datePublished">2020-11-11</time>
 </a>
     
@@ -115,7 +178,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2020/11/11/Hackergame2020-%E9%83%A8%E5%88%86%E9%A2%98%E8%A7%A3/">Hackergame2020-部分题解</a>
+      <a class="article-title" href="/2020/11/11/0.Hackergame2020-%E9%83%A8%E5%88%86%E9%A2%98%E8%A7%A3/">Hackergame2020-部分题解</a>
     </h1>
   
 
@@ -237,7 +300,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/11/11/Hackergame2020-%E9%83%A8%E5%88%86%E9%A2%98%E8%A7%A3/" data-id="ckhnf8btb0008wcv00dkg7idy" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/11/11/0.Hackergame2020-%E9%83%A8%E5%88%86%E9%A2%98%E8%A7%A3/" data-id="ckhowakz100095cv0hoje9tub" class="article-share-link">Share</a>
       
       
     </footer>
@@ -281,7 +344,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/31/0.%E6%B5%81%E9%87%8F%E5%88%86%E6%9E%90%E5%9F%BA%E7%A1%80--IP-%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81-%E9%BB%98%E8%AE%A4%E7%BD%91%E5%85%B3-DNS%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E5%AD%A6%E4%B9%A0/" data-id="ckhnf8bsc0003wcv07enm70zy" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/31/0.%E6%B5%81%E9%87%8F%E5%88%86%E6%9E%90%E5%9F%BA%E7%A1%80--IP-%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81-%E9%BB%98%E8%AE%A4%E7%BD%91%E5%85%B3-DNS%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E5%AD%A6%E4%B9%A0/" data-id="ckhowakya00035cv055cm86oz" class="article-share-link">Share</a>
       
       
     </footer>
@@ -318,7 +381,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/24/0.%E6%9C%89%E5%85%B3SSTI%E6%BC%8F%E6%B4%9E%E5%92%8Cflask%E7%9A%84%E5%AD%A6%E4%B9%A0/" data-id="ckhnf8bs90002wcv07bov3lz2" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/24/0.%E6%9C%89%E5%85%B3SSTI%E6%BC%8F%E6%B4%9E%E5%92%8Cflask%E7%9A%84%E5%AD%A6%E4%B9%A0/" data-id="ckhowaky400015cv0hfl9aw26" class="article-share-link">Share</a>
       
       
     </footer>
@@ -355,7 +418,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/24/0.burpsuite%E4%BD%BF%E7%94%A8%E6%94%BB%E7%95%A5/" data-id="ckhnf8brq0000wcv03lea25ef" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/24/0.burpsuite%E4%BD%BF%E7%94%A8%E6%94%BB%E7%95%A5/" data-id="ckhowakxm00005cv076i7d881" class="article-share-link">Share</a>
       
       
     </footer>
@@ -428,6 +491,7 @@
 <p>5.Q:在网上查substring()说参数中后两个数字是开始和结束。那为什么结束是1？</p>
 <p>A:仔细看看这是哪的substring()!网上查到的是java和js的。而这里的substring()是sql server的(即第三个参数不是结束，而是子串长度)，他们的substring()参数并不完全一样。</p>
 <p>参考网站：</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/andaren6337/article/details/102266663">xff是什么?</a></p>
 <p><a target="_blank" rel="noopener" href="https://blog.csdn.net/bylfsj/article/details/101452185">关于xff注入的描述、检测方法以及修复方法</a></p>
 <p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_37873738/article/details/88042610">xff报错注入的原理</a></p>
 <p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/Gcker/p/13838997.html">思路参考</a></p>
@@ -438,7 +502,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/20/N1CTF-Web%E7%9A%84%E6%80%BB%E7%BB%93/" data-id="ckhnf8bsf0004wcv09uvxf97x" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/20/N1CTF-Web%E7%9A%84%E6%80%BB%E7%BB%93/" data-id="ckhowakye00055cv0f0kcbxnt" class="article-share-link">Share</a>
       
       
     </footer>
@@ -494,7 +558,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/19/%E5%8E%9F%E5%9E%8B%E6%B1%A1%E6%9F%93/" data-id="ckhnf8bt70007wcv0bazw0oe4" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/19/%E5%8E%9F%E5%9E%8B%E6%B1%A1%E6%9F%93/" data-id="ckhowakz000085cv060s23wyy" class="article-share-link">Share</a>
       
       
     </footer>
@@ -609,7 +673,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/14/SQL%E6%B3%A8%E5%85%A5%E7%9A%84%E6%80%BB%E7%BB%93/" data-id="ckhnf8bsh0005wcv09biic3ky" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/14/SQL%E6%B3%A8%E5%85%A5%E7%9A%84%E6%80%BB%E7%BB%93/" data-id="ckhowakyc00045cv0637j5j0o" class="article-share-link">Share</a>
       
       
     </footer>
@@ -667,7 +731,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/08/%E5%85%B3%E4%BA%8EPHP%E5%BA%8F%E5%88%97%E5%8C%96%E5%92%8C%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E7%9A%84%E6%BC%8F%E6%B4%9E%E5%92%8C%E4%B8%80%E4%BA%9B%E5%B0%8F%E7%BB%86%E8%8A%82/" data-id="ckhnf8bsk0006wcv0a9eoega9" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/08/%E5%85%B3%E4%BA%8EPHP%E5%BA%8F%E5%88%97%E5%8C%96%E5%92%8C%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E7%9A%84%E6%BC%8F%E6%B4%9E%E5%92%8C%E4%B8%80%E4%BA%9B%E5%B0%8F%E7%BB%86%E8%8A%82/" data-id="ckhowakyh00075cv07uho1eak" class="article-share-link">Share</a>
       
       
     </footer>
@@ -708,11 +772,15 @@
       <ul>
         
           <li>
-            <a href="/2020/11/18/0.%E5%85%B3%E4%BA%8E%E5%AF%86%E7%A0%81%E7%88%86%E7%A0%B4%E7%9A%84%E6%80%BB%E7%BB%93/">关于密码爆破的总结</a>
+            <a href="/2020/11/19/0.%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E5%92%8Cphp%E4%BC%AA%E5%8D%8F%E8%AE%AE/">文件包含漏洞和php伪协议</a>
           </li>
         
           <li>
-            <a href="/2020/11/11/Hackergame2020-%E9%83%A8%E5%88%86%E9%A2%98%E8%A7%A3/">Hackergame2020-部分题解</a>
+            <a href="/2020/11/19/python%20requests.session()%E7%9A%84%E7%90%86%E8%A7%A3%E5%92%8Cbase64%E5%9C%A8%E6%AD%A3%E5%88%99%E4%B8%AD%E7%9A%84%E5%BD%A2%E5%BC%8F/">(1)python requests.session()的理解和(2)base64在正则中的形式</a>
+          </li>
+        
+          <li>
+            <a href="/2020/11/11/0.Hackergame2020-%E9%83%A8%E5%88%86%E9%A2%98%E8%A7%A3/">Hackergame2020-部分题解</a>
           </li>
         
           <li>
@@ -721,10 +789,6 @@
         
           <li>
             <a href="/2020/10/24/0.%E6%9C%89%E5%85%B3SSTI%E6%BC%8F%E6%B4%9E%E5%92%8Cflask%E7%9A%84%E5%AD%A6%E4%B9%A0/">有关SSTI漏洞和flask的学习</a>
-          </li>
-        
-          <li>
-            <a href="/2020/10/24/0.burpsuite%E4%BD%BF%E7%94%A8%E6%94%BB%E7%95%A5/">burpsuite使用攻略</a>
           </li>
         
       </ul>

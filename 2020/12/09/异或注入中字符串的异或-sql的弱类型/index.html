@@ -15,7 +15,7 @@
 <meta property="og:description" content="今天在bugku上刷到一个叫sql注入2的题。题目过滤了很多保留字，像是and，or，逗号，空格等等。题目用了mid的倒序取反再截取最后一位，再根据uname进行布尔盲注，最后把所有字符再取倒序就得到passwd里的内容。根据特征再md5解密就得到密码。 1234567891011121314151617181920import requestsurl &#x3D; &#39;http:&amp;#x2F">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-12-09T15:37:18.839Z">
-<meta property="article:modified_time" content="2020-12-09T17:14:50.623Z">
+<meta property="article:modified_time" content="2020-12-09T17:26:00.885Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
   
@@ -94,14 +94,13 @@
 <p><a target="_blank" rel="noopener" href="https://blog.csdn.net/yiqiushi4748/article/details/93138238?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-2.control&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-2.control">脚本思路参考网站</a></p>
 <p>但是重点来了，我还看到有用异或进行布尔盲注的(<a target="_blank" rel="noopener" href="https://blog.csdn.net/Mikasa_/article/details/87475337?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-2.control&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-2.control">网站</a>)，我感到很惊奇，异或注入返回值不是应该只有数字吗（非数字在^中会被当做0），然而用户名却是’admin’，怎么可能用它进行盲注呢？</p>
 <p>我又找了个在线跑sql的网站，发现select ‘admin’^0^’’；明明返回的是0啊，不返回admin那wp里面是怎么用它布尔盲注的??</p>
-<p>最后问了学长才知道，这个登录界面后台可能是用的username=uname，我们uname”‘admin’^0^’’”返回0，<strong>就是username=0，这样是可以爆出全表的。</strong>因为username=0，实际上是<strong>查询所有能解析为0的字符串</strong>。</p>
+<p>最后问了学长才知道，这个登录界面后台可能是用的username=uname，我们uname”‘admin’^0^’’”返回0，<strong>就是username=0，这样是可以爆出全表的。</strong>因为username=0，实际上是<strong>查询所有能解析为0的字符串</strong>，也就肯定能查到admin啦。</p>
 <p>而什么字符串可以解析为0呢？注意sql是弱类型，所以以0开头的非纯数字的字符串、空串还有不包含任何数字的字符串都会被解析为0。而如果一个字符串以数字开头而又不是纯数字，那就会被解析为首个数字（以遇到非数字为终止）。（PS:思考一下，一直’abc123’=0成立，’abc’=0成立，为什么’abc123’=’abc’不成立？A:因为前两者的成立是建立在将字符串作为数字解析的前提下，而后者的两个字符串都被当做字符串解析，肯定就不一样了啊。）</p>
-<p>所以看看最后盲注出的flag，发现正好是以0开头的。。。所以这个地方只是凑巧了而已。</p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/12/09/%E5%BC%82%E6%88%96%E6%B3%A8%E5%85%A5%E4%B8%AD%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E5%BC%82%E6%88%96-sql%E7%9A%84%E5%BC%B1%E7%B1%BB%E5%9E%8B/" data-id="ckihob6tf0007xkv0524k2lk4" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/12/09/%E5%BC%82%E6%88%96%E6%B3%A8%E5%85%A5%E4%B8%AD%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E5%BC%82%E6%88%96-sql%E7%9A%84%E5%BC%B1%E7%B1%BB%E5%9E%8B/" data-id="ckihoq1k00007usv079n6826b" class="article-share-link">Share</a>
       
       
     </footer>

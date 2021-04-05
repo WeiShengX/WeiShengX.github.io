@@ -64,6 +64,47 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-关于Connection首部和哑代理的问题" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/04/05/%E5%85%B3%E4%BA%8EConnection%E9%A6%96%E9%83%A8%E5%92%8C%E5%93%91%E4%BB%A3%E7%90%86%E7%9A%84%E9%97%AE%E9%A2%98/" class="article-date">
+  <time datetime="2021-04-05T09:47:15.772Z" itemprop="datePublished">2021-04-05</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/04/05/%E5%85%B3%E4%BA%8EConnection%E9%A6%96%E9%83%A8%E5%92%8C%E5%93%91%E4%BB%A3%E7%90%86%E7%9A%84%E9%97%AE%E9%A2%98/">关于Connection首部和哑代理的问题</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>之前第一次看HTTP权威指南的时候这里就有很多地方不理解，第二遍回看的时候发现还是自己看的不够细，书上其实解释的很清楚了</p>
+<p>1.为什么哑代理会在与服务器建立keep-alive后挂起客户端的请求？不可以同时发多个请求吗？</p>
+<p>A：书上在哑代理这里第一句话就是：问题出在代理上。对于旧版的代理而言，他们不知道有持久连接这回事，他们只会等一个连接结束后再开启一个新连接。在我理解看来，其实本质原因有两点，一是这些代理没有实现并行连接(这种代理本质是单线程的WEB服务器/P125)，二是服务器/客户端认识keep-alive而代理不认识导致的连接关不上。这两个问题只要解决其中一个就可以把这些蠢代理变成聪明代理了。一的解决是对于1.1版本的代理而言的，如果让代理实现并行连接，这样就可以让代理同时承载两个持久连接并处理服务器和客户端之间的HTTP事件；而二的解决是一个约定的标准，通过禁止1.1版本以前的代理转发Connection的方式直接ban掉了持久连接，自然不会有哑代理的问题。</p>
+<p>2.HTTP1.0用的是keep-alive，在HTTP1.1中用”默认持久连接，取消时使用close”的方式进行了代替，这样做好像也解决不了哑代理啊。</p>
+<p>A：人家这么做不是为了解决哑代理，而是为了优化机制。哑代理的解决不是单纯改持久连接方式就能改的，本质原因还是因为中间的蠢代理。而HTTP1.1也依然延续了上一问说的的解决方式：即对于包括1.1以上版本的代理，已经实现了并行连接就不会有哑代理了；而对这之前版本的代理，直接阉割掉这个功能防止出问题。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2021/04/05/%E5%85%B3%E4%BA%8EConnection%E9%A6%96%E9%83%A8%E5%92%8C%E5%93%91%E4%BB%A3%E7%90%86%E7%9A%84%E9%97%AE%E9%A2%98/" data-id="ckn4hz0qj0007b0v05f6dfmdf" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-我，内卷的失败者" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2021/03/11/%E6%88%91%EF%BC%8C%E5%86%85%E5%8D%B7%E7%9A%84%E5%A4%B1%E8%B4%A5%E8%80%85/" class="article-date">
@@ -99,7 +140,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/03/11/%E6%88%91%EF%BC%8C%E5%86%85%E5%8D%B7%E7%9A%84%E5%A4%B1%E8%B4%A5%E8%80%85/" data-id="ckm4pibp30009xov04yfe87vo" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/03/11/%E6%88%91%EF%BC%8C%E5%86%85%E5%8D%B7%E7%9A%84%E5%A4%B1%E8%B4%A5%E8%80%85/" data-id="ckn4hz0ql000bb0v0152lf072" class="article-share-link">Share</a>
       
       
     </footer>
@@ -211,7 +252,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/30/Hgame%E9%A2%98%E8%A7%A3/" data-id="ckm4piboy0002xov084ppbcpr" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/30/Hgame%E9%A2%98%E8%A7%A3/" data-id="ckn4hz0qe0001b0v03xzyda4o" class="article-share-link">Share</a>
       
       
     </footer>
@@ -261,7 +302,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/12/23/bugku-web37%E7%9A%84%E6%97%B6%E9%97%B4%E7%9B%B2%E6%B3%A8%E5%81%9A%E6%B3%95/" data-id="ckm4piboy0003xov037id9830" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/12/23/bugku-web37%E7%9A%84%E6%97%B6%E9%97%B4%E7%9B%B2%E6%B3%A8%E5%81%9A%E6%B3%95/" data-id="ckn4hz0qg0004b0v0ai74apbw" class="article-share-link">Share</a>
       
       
     </footer>
@@ -308,7 +349,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/12/09/%E5%BC%82%E6%88%96%E6%B3%A8%E5%85%A5%E4%B8%AD%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E5%BC%82%E6%88%96-sql%E7%9A%84%E5%BC%B1%E7%B1%BB%E5%9E%8B/" data-id="ckm4pibp20008xov0azhmhth6" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/12/09/%E5%BC%82%E6%88%96%E6%B3%A8%E5%85%A5%E4%B8%AD%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E5%BC%82%E6%88%96-sql%E7%9A%84%E5%BC%B1%E7%B1%BB%E5%9E%8B/" data-id="ckn4hz0ql000ab0v04e99a5e0" class="article-share-link">Share</a>
       
       
     </footer>
@@ -440,7 +481,7 @@ print(r.text)</code></pre>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/12/05/C1CTF2020-WP/" data-id="ckm4pibob0000xov060bs939v" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/12/05/C1CTF2020-WP/" data-id="ckn4hz0pu0000b0v0cybjd8sz" class="article-share-link">Share</a>
       
       
     </footer>
@@ -512,7 +553,7 @@ print(r.text)</code></pre>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/12/02/wp-geekchallenge2020/" data-id="ckm4pibp10006xov04l3t7sva" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/12/02/wp-geekchallenge2020/" data-id="ckn4hz0qh0005b0v064fth6vr" class="article-share-link">Share</a>
       
       
     </footer>
@@ -634,7 +675,7 @@ print(r.text)</code></pre>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/11/19/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E5%92%8Cphp%E4%BC%AA%E5%8D%8F%E8%AE%AE/" data-id="ckm4pibp4000bxov0hpethuck" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/11/19/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E5%92%8Cphp%E4%BC%AA%E5%8D%8F%E8%AE%AE/" data-id="ckn4hz0qn000cb0v08n1u7czk" class="article-share-link">Share</a>
       
       
     </footer>
@@ -697,7 +738,7 @@ print(r.text)</code></pre>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/11/19/python%20requests.session()%E7%9A%84%E7%90%86%E8%A7%A3%E5%92%8Cbase64%E5%9C%A8%E6%AD%A3%E5%88%99%E4%B8%AD%E7%9A%84%E5%BD%A2%E5%BC%8F/" data-id="ckm4pibp00005xov06bsjgwdh" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/11/19/python%20requests.session()%E7%9A%84%E7%90%86%E8%A7%A3%E5%92%8Cbase64%E5%9C%A8%E6%AD%A3%E5%88%99%E4%B8%AD%E7%9A%84%E5%BD%A2%E5%BC%8F/" data-id="ckn4hz0qi0006b0v0dypm93e3" class="article-share-link">Share</a>
       
       
     </footer>
@@ -835,104 +876,7 @@ print(r.text)</code></pre>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/11/11/Hackergame2020-%E9%83%A8%E5%88%86%E9%A2%98%E8%A7%A3/" data-id="ckm4pibpc000dxov06xmg66oi" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-流量分析基础--IP-子网掩码-默认网关-DNS服务器的学习" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2020/10/31/%E6%B5%81%E9%87%8F%E5%88%86%E6%9E%90%E5%9F%BA%E7%A1%80--IP-%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81-%E9%BB%98%E8%AE%A4%E7%BD%91%E5%85%B3-DNS%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E5%AD%A6%E4%B9%A0/" class="article-date">
-  <time datetime="2020-10-31T01:56:02.613Z" itemprop="datePublished">2020-10-31</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/10/31/%E6%B5%81%E9%87%8F%E5%88%86%E6%9E%90%E5%9F%BA%E7%A1%80--IP-%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81-%E9%BB%98%E8%AE%A4%E7%BD%91%E5%85%B3-DNS%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E5%AD%A6%E4%B9%A0/">流量分析基础--IP 子网掩码 默认网关 DNS服务器的学习</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>上次去CISCN登入的时候就遇到了这几个词，然而我刚大二还没学过这几个词。终于这次铁三有流量分析的题了，嘤嘤嘤要从头开始学了。</p>
-<p>网站参考<a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_44291161/article/details/106442200?utm_medium=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param">在这</a>~</p>
-<p>1.IP地址</p>
-<p>IP是一个32位二进制的字符串，为了方便记忆和美观，通常转换成4位十进制用”.”分隔的形式的字符串来表示，比如类似”192.168.70.41”这样的字符串。</p>
-<p><strong>IP地址=网络号+主机号。</strong></p>
-<p>其中网络号标志主机所连接到的网络（<strong>用于识别主机所在的网络</strong>），一个网络号在互联网范围内是唯一的。由IP管理机构分配给单位。路由器仅根据主机所连接的网络号转发分组，不考虑主机号。</p>
-<p>而主机号标志该主机或路由器（<strong>用于识别该网络中的主机</strong>），在它所在的网络范围内是唯一的。由得到该网络号的单位自行分配主机号。</p>
-<p>总的来说：IP地址由两部分：网络地址和主机地址构成。网络地址相当某个网络的编号，同理主机地址就是相同网络内的主机编号，相同的网络地址的两台主机之间才能通信，因此如果两台主机之间的网络地址不相同，必须经过路由器才能发送到目的主机</p>
-<p>在上面的例子中，192.168.70.41(IP地址)=192.168.70.0(网络号)+0.0.0.41(主机号)。</p>
-<p><em>PS:192.168.70.41是一个C类IP地址，根据用途和机构，分为五类，A类保留给政府机构，B类分配给中等规模的公司，C类分配给任何需要的人，D类用于组播，E类用于实验，各类可容纳的地址数目不同。</em></p>
-<p><em>常见的就是A类、B类、和C类这三类地址，他们用于TCP/IP节点，其它两类D类和E类被用于特殊用途。</em></p>
-<p><em>A、B、C三类IP地址的特征：</em></p>
-<p><em>(1).当将IP地址写成二进制形式时，A类地址的第一位总是0(1-126)，B类地址的前两位总是10(128-191)，C类地址的前三位总是110(192-223)。</em></p>
-<p><em>(2).A类/B类/C类IP地址的网络号为8/16/24位，主机号为24/16/8位。（通俗的说，可用的A类网络有126个，每个网络能容纳1亿多个主机。可用的B类网络有16382个，每个网络能容纳6万多个主机 。C类网络可达209万余个，每个网络能容纳254个主机。</em></p>
-<p><em>还有很多关于不同类型IP地址的细节，可以看参考网站2，在这里不多BB了。</em></p>
-<p>还有两个特殊的地址：</p>
-<p><strong>(a)广播地址</strong>：主机号全为1的IP地址，如192.168.1.255 若目的地址为广播地址，则会向该网络中的所有主机进行转发。</p>
-<p><strong>(b)网络地址</strong>：主机号全为0 的IP地址。如：192.168.1.0 。<br> 这两个地址很特殊，一般A,B,C三类可分配的IP地址要减去这两个。</p>
-<p>2.IP地址与MAC地址</p>
-<p>MAC地址（Media Access Control或者Medium Access Control），意译为媒体访问控制，或称为物理地址、硬件地址，用来定义网络设备的位置。<strong>MAC地址是网卡决定的，是固定的。用来表示互联网上每一个站点的标识符</strong>，采用十六进制数表示，共6个字节（48位）。其中，前三个字节是由IEEE的注册管理机构RA负责给不同厂家分配的代码(高位24位），也称为“编制上唯一的标识符”（Organizationally Unique  Identifier），后三个字节(低位24位)由各厂家自行指派给生产的适配器接口，称为扩展标识符（唯一性）。一个地址块可以生成224个不同的地址。MAC地址实际上就是适配器地址或适配器标识符EUI-48。</p>
-<p>(1)区别：IP地址是逻辑地址(其实就是网络号+主机号，汇编中各种地址的意义参考<a target="_blank" rel="noopener" href="https://blog.csdn.net/Mart1nn/article/details/81058158">这个网站</a>)，是网络层及以上使用，被封装在IP数据包的首部；MAC地址是物理地址，在数据链路层和物理层使用，封装在MAC帧的首部。</p>
-<p>(2)联系：光凭知道目的主机的IP地址，是无法找到主机的，必须依靠物理地址。(注意，这里MAC地址可不是什么电脑所在的位置，而是每台设备的一个固定标号，和位置不是一码事，靠MAC地址也没法定位电脑在现实世界中的位置。MAC地址更像是“有唯一性的名字”这样的东西，是用于区分各个设备的)</p>
-<p><em>PS:上面两条看的很懵B，这个层那个层，找这个找那个等等…只能查了</em></p>
-<p><em>OSI七层模型（对应TCP/IP中的四层模型）及各层作用</em></p>
-<p><em>OSI分为物理层，数据链路层，网络层，传输层，会话层，表示层，应用层。细节在参考网站3，这里只说说IP地址/MAC地址对应的网络层/数据链路层。</em></p>
-<p><em>数据链路层：该层的作用包括了物理地址寻址，数据的成帧，流量控制，数据的检错，重发等。该层控制网络层与物理层之间的通信，解决的是所传输数据的准确性的问题。为了保证传输，从网络层接收到的数据被分制成特定的可被物理层传输的帧。帧是用来移动数据的结构包，它不仅包括原始数据，还包括发送方和接收方的物理地址以及纠错和控制的信息。其中的地址确定了帧将发送的位置，纠错和控制信息则保证帧的准确到达。如果传送数据的过程中，接收点检测到数据有错误，就通知发送方重新发送这一帧。</em></p>
-<p><em>网络层：主要功能是讲网络地址翻译成对应的物理地址，并决定如何将数据从发送方路由到接受方，他解决的是寻址和优化传输路径的问题。网络层通过综合考虑发送优先权，网络拥塞程度，服务质量以及可选择路由的花费决定从一个网络中节点A到另一个网络中节点B的最佳路径。在网络中，“路由（router）”基于编址方案，使用模式以及可达性来指引数据的发送，网络层负责在原机器和目的机器之间建立他们所使用的路由。</em><br><em>PPS:有关网关、路由、交换机的细节看参考网站3的网络层和参考网站4</em></p>
-<p><em>在OSI模型中，第三层网络层负责IP地址，第二层数据链路层则负责MAC地址。两者之间分工明确，默契合作，完成通信过程。IP地址专注于网络层，将数据包从一个网络转发到另外一个网络；而MAC地址专注于数据链路层，将一个数据帧从一个节点传送到相同链路的另一个节点。</em> </p>
-<p><em>这样我们差不多可以大体理解IP地址和MAC地址在网络层和数据链路层传递数据的时候起了什么作用了。</em></p>
-<p>*<strong>传递过程：**</strong>在用户发送数据时，从高层下到低层，直到包含IP地址的IP数据包被送到链路层时，IP数据包被封装成MAC帧的数据段，再加上首部和尾部，MAC帧传送的源地址和目的地址都是硬件地址在首部中。主机和路由器在收到MAC帧时，先根据首部中的硬件地址决定是丢弃还是接收该帧，只有去掉MAC帧的首尾部后把数据段（其实就是上一层传下来的数据报）返回给网络层，这时网络层才能根据IP数据报首部中，找到源IP地址和目的IP地址。*</p>
-<p><em>简单来说，<strong>IP地址就像是在网络世界中，我们每个人的坐标，而MAC地址，就像是我们每个人本身的身份</strong>。两个人在空间的两点（IP地址）间传递信息，前提肯定是这两个人在这个世界有身份或者说是活着的（有MAC地址）。</em></p>
-<p>(3).很容易想到，既然如此，那么传递信息的时候IP地址和MAC地址肯定是有对应关系的，这个映射关系是如何定义和完成的呢？（即在IP数据传到数据链路层时，主机或路由器怎么在MAC帧的首部填入关于源IP地址和目的IP地址对应的源MAC地址和目的MAC地址内？？？）<strong>事实上，是通过ARP地址解析协议（细节见参考网站4）</strong>。</p>
-<p>3.子网和子网掩码</p>
-<p><em>详细细节见参考网站5</em></p>
-<p>考虑两个问题：</p>
-<p>(1)IP地址是以网络号和[主机号来表示网络上的主机的，只有在一个网络号下的计算机之间才能“直接”互通，不同网络号的计算机要通过网关才能互通。但这样的划分在某些情况下显得并不十分灵活。</p>
-<p>(2)随着互联网发展，IPV4的地址资源可能会耗尽。假设直接把一个C类地址分给一个企业，C类地址可以容纳256个主机，但这个公司只有20台计算机，这会造成极大地浪费。</p>
-<p>考虑到以上两个问题，子网这个概念诞生了。其实就是把主机号中的若干位拿出来表示网络号，这几位也叫做<strong>子网号</strong>，子网号可以将网络地址划分为若干子网。这样不但便于管理而且还能极大程度的减少IP的浪费。划分子网的方法是从网络的主机号借用若干位作为子网号 subnet-id  ，主机号自然就减少相应的位数。于是两级的IP地址在本单位内部就变位三级的IP地址：网络号、子网号和主机号，标记方法为:子网IP地址={&lt;网络号&gt;,&lt;子网号&gt;,&lt;主机号&gt;}。</p>
-<p>与子网相伴而生的就是子网掩码。子网掩码不能单独存在，它必须结合IP地址一起使用。子网掩码的作用就是指明一个IP地址的哪几位标识的是主机，哪几位用来区分子网。更准确的说，是将IP划分为网络号和主机号（由于子网号的存在，主机号可能不是8位）</p>
-<p>PS:通过子网掩码和IP地址可以得到网络号和主机号。通过运算。例如，C类缺省子网掩码：255.255.255.0，通过它与IP地址进行与运算就得到了网络号，这样就可以判断两个子网是否是同一网络号。得到主机号也类似（掩码如果非缺省得到的主机号可能就不是8位了，该是几位就是几位）</p>
-<p>子网、网段和局域网大致可以理解为一个意思。那么只有在同一子网的计算机才能”直接”互通（要是想不同子网之间互通，还是得用路由器啊）。但是<strong>为什么同一网络号的不同子网不能互通呢？</strong>因为<strong>数据包在三层就停住了,根本不会涉及到二层。</strong>（细节看<a target="_blank" rel="noopener" href="https://www.cnblogs.com/S-volcano/p/5032065.html">这个网站</a>，或者直接看参考网站4中ARP的描述，很容易知道如果本机ARP高速缓冲中找不到IP和对应MAC的映射，只会再向<strong>本网段</strong>的主机发送请求，其他网段压根收不到，就卡在这一步了）</p>
-<p>4.网关、路由、代理</p>
-<p>（1）网关是什么：每台计算机都需要正确配置IP地址和子网掩码，将这两个进行与运算计算出网络号，如果两台计算机所处的网络号相同（PS：这里的<strong>网络号是包括子网号</strong>的），说明两台计算机在同一个网段，可以直接通信。如果网络号不同，那说明不在同一个网络，不能直接通信，必须通过<strong>路由器或者交换机这样的网络设备</strong>间接通信。我们可以把这种“连接不同网络“的设备称为<strong>网关设备（简称“网关”）</strong>，应用在网络层。</p>
-<p>（2）路由、路由器是什么：通过把来自一个网络的数据包发到另一个网络，从而把不同网络连接起来的这个过程叫<strong>路由</strong>。而<strong>路由器</strong>，就是这里转发数据包的设备。</p>
-<p>（3）代理是什么：代理是服务器和客户端直接的“中间人”。他可以做很多事，比如过滤数据内容、将请求按照某些分级转发给不同服务器，充当缓存提高访问速度、修改数据包、充当反向代理（假装自己是真实服务器，直接冒用服务器的IP和名字，可以处理发给服务器的请求并在必要时访问资源）从而提高安全系数或提高性能、充当转码器等等。</p>
-<p>（4）网关和代理的差异：路由器只是网关的一个元素。网关更本质的说，是<strong>不同协议之间的“转换交流器”</strong>，它可以在不同协议间传输数据包。而代理理论上是服务于“使用相同协议的两个服务器之间”的。</p>
-<p>这么看可能很抽象，我举个例子。客户端和服务器都使用HTTP协议，说明的是他们传输的内容对象都是html的，那么他们之间可以用代理传送数据。但如果客户端使用HTTP协议，服务器使用POP3协议（针对Emile），那么他们之间要想传送数据，只能使用网关。说实话，网关和代理本质上都是一种“特殊的服务器”，他们之间的区别其实很模糊，在当下代理很多时候也实现了协议转换，甚至更多网关的功能。</p>
-<p>PS:网关、路由器和代理的IP：网关和代理，本质上都是服务器，他们都需要有自己的IP才能在网络中工作。而路由器的IP地址通常是单独保留的（192.168.1.1，这是一个局域网IP），他本质上是路由器的网关地址，而路由器接口的地址是路由器下不同局域网的网关地址，他们彼此靠自己的网关地址也可以直接进行通信。</p>
-<p>PPS:主机是设备，在http1.0以上的版本（不包括http1.0）中，它上面可不止能跑一个网站（可以用虚拟主机）。因此在http1.0以上的版本（不包括http1.0）除非主机上只跑了一个网站，否则需要添加Host请求头指定服务器。而http1.0则根本没有虚拟主机这种概念。。。就是单纯的一个主机对应一个服务器，客户端建立连接都是直接和唯一的服务器建立的。</p>
-<p><strong><em>PS:默认网关（Default Gateway)</em></strong> :一台主机可以有多个网关，如果找不到可用的网关，就会把数据包发给默认指定的网关，由这个网关来处理数据包。<br> 现在主机使用的网关，一般指的是默认网关。</p>
-<p>可以通过<strong>DHCP（动态主机配置协议）服务器</strong>来自动给网络中的计算机分配IP地址、子网掩码和默认网关 。<br> 当网络的默认网关发生了变化时，只需更改DHCP服务器中默认网关的设置，那么网络中所有的计算机均获得了新的默认网关的IP地址。</p>
-<p><em>PS:有关网关、路由、交换机的细节看参考网站3的网络层和参考网站4</em></p>
-<p>5.DNS</p>
-<p>DNS：域名服务器。负责把域名解析为对应的IP地址，客户端再根据IP地址访问服务器。</p>
-<p>当用户在浏览器上输入网址进行http请求时，需要将域名转化为IP地址，就要给-默认网关-发送一条DNS请求，路由都会配置一个DNS服务器地址，这个地址便是DNS请求的目的地址，当 DNS 服务器收到请求后，会检查该服务器上有没有该请求的对应转换信息。如果没有 ，就会把这条请求转发给其他的 DNS  服务器（转发查询）。通过这种方式，就完成了从域名到 IP 地址的转换。<br> 可以在CMD中输入“config/all”查看关于DNS,IP,默认网关,DHCP服务器等</p>
-<p>参考网站：</p>
-<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_44291161/article/details/106442200?utm_medium=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.channel_param">基础知识</a></p>
-<p><a target="_blank" rel="noopener" href="https://www.jb51.net/network/579228.html">IP地址的分类</a></p>
-<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/zhangyi_1027/article/details/80022493">OSI七层模型及各层作用</a></p>
-<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/nickup/p/9745939.html">ARP（地址解析协议）、交换机、路由器、网关的概念、原理和作用</a></p>
-<p><a target="_blank" rel="noopener" href="http://www.360doc.com/content/18/0921/19/37113458_788584404.shtml">子网和子网掩码</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/31/%E6%B5%81%E9%87%8F%E5%88%86%E6%9E%90%E5%9F%BA%E7%A1%80--IP-%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81-%E9%BB%98%E8%AE%A4%E7%BD%91%E5%85%B3-DNS%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E5%AD%A6%E4%B9%A0/" data-id="ckm4pibp3000axov0atgicd38" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/11/11/Hackergame2020-%E9%83%A8%E5%88%86%E9%A2%98%E8%A7%A3/" data-id="ckn4hz0qo000eb0v0e1qgfkn0" class="article-share-link">Share</a>
       
       
     </footer>
@@ -965,7 +909,7 @@ print(r.text)</code></pre>
   <div class="widget-wrap">
     <h3 class="widget-title">Archives</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">March 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/01/">January 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">December 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">November 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/10/">October 2020</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">April 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">March 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/01/">January 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">December 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">November 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/10/">October 2020</a></li></ul>
     </div>
   </div>
 
@@ -976,6 +920,10 @@ print(r.text)</code></pre>
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2021/04/05/%E5%85%B3%E4%BA%8EConnection%E9%A6%96%E9%83%A8%E5%92%8C%E5%93%91%E4%BB%A3%E7%90%86%E7%9A%84%E9%97%AE%E9%A2%98/">关于Connection首部和哑代理的问题</a>
+          </li>
         
           <li>
             <a href="/2021/03/11/%E6%88%91%EF%BC%8C%E5%86%85%E5%8D%B7%E7%9A%84%E5%A4%B1%E8%B4%A5%E8%80%85/">我，内卷的失败者</a>
@@ -991,10 +939,6 @@ print(r.text)</code></pre>
         
           <li>
             <a href="/2020/12/09/%E5%BC%82%E6%88%96%E6%B3%A8%E5%85%A5%E4%B8%AD%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E5%BC%82%E6%88%96-sql%E7%9A%84%E5%BC%B1%E7%B1%BB%E5%9E%8B/">异或注入中字符串的异或-sql的弱类型</a>
-          </li>
-        
-          <li>
-            <a href="/2020/12/05/C1CTF2020-WP/">C1CTF2020-题解</a>
           </li>
         
       </ul>

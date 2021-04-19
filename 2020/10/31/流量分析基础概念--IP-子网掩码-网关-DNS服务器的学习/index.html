@@ -10,7 +10,7 @@
   <meta name="description" content="上次去CISCN登入的时候就遇到了这几个词，然而我刚大二还没学过这几个词。终于这次铁三有流量分析的题了，嘤嘤嘤要从头开始学了。 网站参考在这~ 1.IP地址 IP是一个32位二进制的字符串，为了方便记忆和美观，通常转换成4位十进制用”.”分隔的形式的字符串来表示，比如类似”192.168.70.41”这样的字符串。 IP地址&#x3D;网络号+主机号。 其中网络号标志主机所连接到的网络（用于识别主机所在的网">
 <meta property="og:type" content="article">
 <meta property="og:title" content="流量分析基础--IP 子网掩码 默认网关 DNS服务器的学习">
-<meta property="og:url" content="http://example.com/2020/10/31/%E6%B5%81%E9%87%8F%E5%88%86%E6%9E%90%E5%9F%BA%E7%A1%80--IP-%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81-%E9%BB%98%E8%AE%A4%E7%BD%91%E5%85%B3-DNS%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E5%AD%A6%E4%B9%A0/index.html">
+<meta property="og:url" content="http://example.com/2020/10/31/%E6%B5%81%E9%87%8F%E5%88%86%E6%9E%90%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5--IP-%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81-%E7%BD%91%E5%85%B3-DNS%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E5%AD%A6%E4%B9%A0/index.html">
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="上次去CISCN登入的时候就遇到了这几个词，然而我刚大二还没学过这几个词。终于这次铁三有流量分析的题了，嘤嘤嘤要从头开始学了。 网站参考在这~ 1.IP地址 IP是一个32位二进制的字符串，为了方便记忆和美观，通常转换成4位十进制用”.”分隔的形式的字符串来表示，比如类似”192.168.70.41”这样的字符串。 IP地址&#x3D;网络号+主机号。 其中网络号标志主机所连接到的网络（用于识别主机所在的网">
 <meta property="og:locale" content="en_US">
@@ -66,9 +66,9 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="post-流量分析基础--IP-子网掩码-默认网关-DNS服务器的学习" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-流量分析基础概念--IP-子网掩码-网关-DNS服务器的学习" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2020/10/31/%E6%B5%81%E9%87%8F%E5%88%86%E6%9E%90%E5%9F%BA%E7%A1%80--IP-%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81-%E9%BB%98%E8%AE%A4%E7%BD%91%E5%85%B3-DNS%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E5%AD%A6%E4%B9%A0/" class="article-date">
+    <a href="/2020/10/31/%E6%B5%81%E9%87%8F%E5%88%86%E6%9E%90%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5--IP-%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81-%E7%BD%91%E5%85%B3-DNS%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E5%AD%A6%E4%B9%A0/" class="article-date">
   <time datetime="2020-10-31T01:56:02.613Z" itemprop="datePublished">2020-10-31</time>
 </a>
     
@@ -153,7 +153,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2020/10/31/%E6%B5%81%E9%87%8F%E5%88%86%E6%9E%90%E5%9F%BA%E7%A1%80--IP-%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81-%E9%BB%98%E8%AE%A4%E7%BD%91%E5%85%B3-DNS%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E5%AD%A6%E4%B9%A0/" data-id="ckn4hz0qn000db0v05uw35rwn" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2020/10/31/%E6%B5%81%E9%87%8F%E5%88%86%E6%9E%90%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5--IP-%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81-%E7%BD%91%E5%85%B3-DNS%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E5%AD%A6%E4%B9%A0/" data-id="cknopixj6000fwsv03982esbi" class="article-share-link">Share</a>
       
       
     </footer>
@@ -211,6 +211,14 @@
       <ul>
         
           <li>
+            <a href="/2021/04/18/BUUOJ-WEB-wp/">BUUOJ WEB-wp</a>
+          </li>
+        
+          <li>
+            <a href="/2021/04/08/%E5%85%B3%E4%BA%8E%E7%BD%91%E5%85%B3%E3%80%81%E9%9A%A7%E9%81%93%E5%92%8C%E4%B8%AD%E7%BB%A7%E7%9A%84%E7%90%86%E8%A7%A3/">关于网关、隧道和中继的理解</a>
+          </li>
+        
+          <li>
             <a href="/2021/04/05/%E5%85%B3%E4%BA%8EConnection%E9%A6%96%E9%83%A8%E5%92%8C%E5%93%91%E4%BB%A3%E7%90%86%E7%9A%84%E9%97%AE%E9%A2%98/">关于Connection首部和哑代理的问题</a>
           </li>
         
@@ -220,14 +228,6 @@
         
           <li>
             <a href="/2021/01/30/Hgame%E9%A2%98%E8%A7%A3/">Hgame题解</a>
-          </li>
-        
-          <li>
-            <a href="/2020/12/23/bugku-web37%E7%9A%84%E6%97%B6%E9%97%B4%E7%9B%B2%E6%B3%A8%E5%81%9A%E6%B3%95/">bugku-web37的时间盲注做法</a>
-          </li>
-        
-          <li>
-            <a href="/2020/12/09/%E5%BC%82%E6%88%96%E6%B3%A8%E5%85%A5%E4%B8%AD%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E5%BC%82%E6%88%96-sql%E7%9A%84%E5%BC%B1%E7%B1%BB%E5%9E%8B/">异或注入中字符串的异或-sql的弱类型</a>
           </li>
         
       </ul>

